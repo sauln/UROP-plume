@@ -1,0 +1,9 @@
+*~
+*.pyc
+*.aux
+*writeup.log
+*writeup.synctex.gz
+*.mat
+*.p
+*.bin
+*.c
