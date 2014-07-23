@@ -2,25 +2,28 @@
 
 #we are going to have the tight class that hangles the plume
 
+import os
+import gc
+import psutil
+import sys
+import copy
+import time
 
 
 
+import math
 from numpy import *
 import numpy as np
 from pylab import *
-
-import copy
 import cPickle
 
-import time
-import math
+
+
 import scipy.io as sio
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
-
-
 
 #import auxiliary
 #reload(auxiliary)
@@ -46,7 +49,7 @@ class plumeEtAl():
 
 		print load
 		if load: #if we need to create the 
-			print "load data!"
+			print "Load sim from file, do not generate."
 			self.loadData(fileName)
 
 	def add(self, mostRecent, T):
@@ -62,15 +65,27 @@ class plumeEtAl():
 			T = T/(1/self.param.dt) 
 			
 			self.saveData(T)
-			del(self.plumeHist)
-			self.plumeHist = []
 
+
+			print "MEMORY USAGE BEFORE: %s" %self.memory_usage_psutil()
+			
+			del(self.plumeHist)
+			#reset(self.plumeHist)
+			gc.collect()
+			self.plumeHist = []
+			
+			print "MEMORY USAGE AFTER: %s" %self.memory_usage_psutil()
 
 
 		self.plumeHist.append(copy.copy(mostRecent))
 
 
-
+	def memory_usage_psutil(self):
+		# return the memory usage in MB
+		import psutil
+		process = psutil.Process(os.getpid())
+		mem = process.get_memory_info()[0] / float(2 ** 20)
+		return mem
 		
 
 
@@ -93,17 +108,33 @@ class plumeEtAl():
 
 		print "use cPickle to load %s" % fileName
 		start = time.clock()
-
+		print "MEMORY USAGE BEFORE DELETION: %s" %self.memory_usage_psutil()
+		if hasattr(self, "plumeHist"):
+			print "delete stuff of size: %s" % sys.getsizeof(self.plumeHist)
+			del self.plumeHist 
+			gc.collect()
+		print "MEMORY USAGE AFTER DELETION: %s" %self.memory_usage_psutil()
 
 		filename = "data/%s_%s.p" %(fileName, T)
 		print "Going to load data from %s" % filename
 		f = open(filename,'rb')
 		tmp_dict = cPickle.load(f)
-		f.close()          
+		f.close()  
+		'''        
+		if hasattr(self, "__dict__"):
+			del(self.__dict__)
+			#reset(self.plumeHist)
+			gc.collect()
+		'''
+
+		
+
+
 		self.__dict__.update(tmp_dict) 
 		elapsed = (time.clock() - start)
 		print "cPickle took %s seconds long" % elapsed
-
+		
+			
 
 	def saveData(self, t = 0):
 
@@ -146,40 +177,16 @@ class puffSoA():
 	#of structures allows us to do calculations in a
 	#very pythonic way.  Is it actually faster though?
 
+
+
 	
 	def __init__(self):
 		self.xs = []
 		self.ys = []
 
-	#what if we rewrite this to be np.arrays?
-
-	#here is will be will write the functions to calculate the gradient and divergence for the location
+	#This needs to be rewritten as numpy arrays...
 
 
-	"""
-
-	def calcConGradDiv(c, x1, x2, x3, x4, vy, vx):
-		#input c, x1, x2, x3, x4, vy, vx
-		#output DU, DU_p, V0, D2U0, U0
-
-		dx = 0.2#this is given from the original environment thread
-		dy = dx
-
-		DU_dy0 = (vy>=0)*(x3-c)/(dx)+(vy<0)*(c-x4)/(dx)
-	  	DU_dx0 = (vx>=0)*(x1-c)/(dx)+(vx<0)*(c-x2)/(dx)
-		DU = (DU_dx0, DU_dy0)
-		DU_p = (-DU_dy0, DU_dx0)
-		DU_p = DU_p/LA.norm(DU_p + np.finfo(float).eps)
-
-		V0 = (vx, vy)
-		D2U0 = (x3+x4-2*c)/dx**2+(x1+x2-2*c)/dy**2
-		U0 = c
-
-		print "DU: %s DU_p: %s\nV0: %s D2U0: %s U0: %s" \
-			%(DU, DU_p, V0, D2U0, U0)
-
-		return DU, DU_p, V0, D2U0, U0
-	"""
 	def gradientDivergence(self, y, x, vx, vy, r, norm):
 		#print "VY: %s VX: %s\nY: %s X: %s" %(vy, vx, y, x)
 
@@ -191,8 +198,8 @@ class puffSoA():
 		xD = self.concentration(y, x-r, r)  * norm
 		c = self.concentration(y,x,r)       * norm
 
-		print "yU: %s yD: %s\nxU: %s xD: %s\nc: %s "%(yU, yD, xU, xD, c)
-		print "vx: %s vy: %s"%(vx,vy)
+		#print "yU: %s yD: %s\nxU: %s xD: %s\nc: %s "%(yU, yD, xU, xD, c)
+		#print "vx: %s vy: %s"%(vx,vy)
 		DU_dy0 = (vy>=0)*(yU-c)/(r)+(vy<0)*(c-yD)/(r)
 	  	DU_dx0 = (vx>=0)*(xU-c)/(r)+(vx<0)*(c-xD)/(r)
 

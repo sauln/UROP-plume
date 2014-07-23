@@ -68,8 +68,8 @@ def retrieve(channel, data):
 	global plum
 
 	r = 0.2
-	norm = (50.0/plum.param.den)
-	print "NORM: %s" %norm
+	norm = (280.0/plum.param.den)
+	print "Normalizing factor: %s" %norm
 
 	msg = positionSim_t.decode(data)
 	x = msg.X0[0];  y = msg.X0[1]
@@ -87,16 +87,16 @@ def retrieve(channel, data):
 	#concentration
 	c = plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r) 
 	c =  c * norm
-	print "concentration at (%s, %s): %s"%(x,y,c)
+	
 
 	#gradient and divergence
 	DU_dx0, DU_dy0, D2U0 = \
 		plum.plumeHist[int(T%(1/plum.param.dt))].\
 		gradientDivergence(x, y, vx, vy, r, norm)
 	
-
-	print "DU_dx0: %s DU_dy0: %s\nD2U0: %s U0: %s" \
-		%(DU_dx0, DU_dy0, D2U0, c)
+	#print "concentration at (%s, %s): %s"%(x,y,c)
+	#print "DU_dx0: %s DU_dy0: %s\nD2U0: %s U0: %s" \
+	#	%(DU_dx0, DU_dy0, D2U0, c)
 
 
 

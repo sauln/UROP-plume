@@ -67,7 +67,7 @@ if plotTrue:
 	fig.ax2 = fig.add_subplot(122, aspect='equal')
 	scale = .03
 	fig.ax.axis([-scale,scale,-scale,scale])
-	fig.ax2.axis([0,20,0,30])
+	#fig.ax2.axis([0,20,0,30])
 	#fig.ax2.sc = None
 
 def mysaturation( x, max_val ):
@@ -118,9 +118,9 @@ def control_SingleIntegrator(X0, Xhat, Xhatdot): #,X0_diff):
 
 def updatePlot(Xhat_diff, Xhat):
 	global fig
-	print "update the plot"
-	print "Xhat_diff: %s" %Xhat_diff
-	print "Xhat: %s" %Xhat
+	#print "update the plot"
+	#print "Xhat_diff: %s" %Xhat_diff
+	#print "Xhat: %s" %Xhat
 
 	#if fig.ax2.sc != None:
 	#	fig.ax2.sc.remove()
