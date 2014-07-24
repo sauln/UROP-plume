@@ -56,6 +56,8 @@ T_thresh 	= float(mat_contents['T_thresh'])
 
 T_thresh = T_thresh*(1/Dt)
 dummyMsg = positionSim_t()
+ts = 5
+
 
 
 for T in xrange(int(ts/Dt)):

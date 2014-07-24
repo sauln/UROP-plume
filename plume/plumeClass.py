@@ -38,8 +38,12 @@ eps = np.finfo(float).eps
 
 
 
-
 class plumeEtAl():
+	""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+	"""               This is mostly a sequential stack of 
+						frames of the plume
+														                 """
+	""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 	def __init__(self, param = None,  load = False, fileName = "plumeHist" ):
 		self.param = param
 		self.plumeHist = []
@@ -52,59 +56,45 @@ class plumeEtAl():
 			print "Load sim from file, do not generate."
 			self.loadData(fileName)
 
-	def add(self, mostRecent, T):
-		#in here, we want to save off every second...
+	""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+	"""                Used for generating the data!                     """
+	""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+	def addFrame(self, mostRecent, T):
+		#in here, we want to save off every frame...
 		#and clear the plumeEtAl all except the last entry, and then continue 
 		#from there with full memory.  
-		print shape(self.plumeHist)
+		#print shape(self.plumeHist)
 
 		print "T: %s" %T
 	
 		if T%(1/self.param.dt) == 0 and T != 0:
 			print "Save off data and start with clean slate."
 			T = T/(1/self.param.dt) 
-			
 			self.saveData(T)
-
-
+			"""
 			print "MEMORY USAGE BEFORE: %s" %self.memory_usage_psutil()
-			
 			del(self.plumeHist)
-			#reset(self.plumeHist)
 			gc.collect()
-			self.plumeHist = []
-			
 			print "MEMORY USAGE AFTER: %s" %self.memory_usage_psutil()
+			"""
+			self.plumeHist = []
+
+		#self.plumeHist.append(copy.copy(mostRecent))
+		self.plumeHist.append(frame(mostRecent))
 
 
-		self.plumeHist.append(copy.copy(mostRecent))
+	def saveData(self, t = 0):
 
-
-	def memory_usage_psutil(self):
-		# return the memory usage in MB
-		import psutil
-		process = psutil.Process(os.getpid())
-		mem = process.get_memory_info()[0] / float(2 ** 20)
-		return mem
-		
-
-
-
-	def printAll(self):
-		for each in self.plumeHist:
-			print each.xs[1]
-		for each in self.plumeHist:
-			print each.ys[1]
+		filename = "data/%s_%s.p" %(self.fileName, int(t))
+		#fileName1 = "data/%s_%s_%s.p" %(t, self.param.dt, self.param.den)
+		f = open(filename,'wb')
+		cPickle.dump(self.__dict__,f,2)
+		f.close()
+		print "saving file to %s" %filename
 
 
 	def loadData(self, fileName, T = 1):
-		""" URGENT TODO """
-		""" 
-			This needs to automatically load 
-			the next file when it gets to the
-			end.  Right now, it only runs for
-			the first one!!
-		"""
 
 		print "use cPickle to load %s" % fileName
 		start = time.clock()
@@ -126,24 +116,26 @@ class plumeEtAl():
 			#reset(self.plumeHist)
 			gc.collect()
 		'''
-
-		
-
-
 		self.__dict__.update(tmp_dict) 
 		elapsed = (time.clock() - start)
 		print "cPickle took %s seconds long" % elapsed
 		
-			
+		
 
-	def saveData(self, t = 0):
 
-		filename = "data/%s_%s.p" %(self.fileName, int(t))
-		#fileName1 = "data/%s_%s_%s.p" %(t, self.param.dt, self.param.den)
-		f = open(filename,'wb')
-		cPickle.dump(self.__dict__,f,2)
-		f.close()
-		print "saving file to %s" %filename
+
+	def memory_usage_psutil(self):
+		# return the memory usage in MB
+		import psutil
+		process = psutil.Process(os.getpid())
+		mem = process.get_memory_info()[0] / float(2 ** 20)
+		return mem
+	
+	def printAll(self):
+		for each in self.plumeHist:
+			print each.xs[1]
+		for each in self.plumeHist:
+			print each.ys[1]
 
 	def makeMovie(self, fig):
 		print "begin making movie"
@@ -171,6 +163,75 @@ class plumeEtAl():
 
 		print "I'm done making a movie now"
 
+def testRange(item, x, r):
+	if item < x+ r and item > x-r:
+		return True
+	else:	
+		return False
+
+
+class frame():
+	def __init__(self, puffs):
+		self.xs = np.asarray(puffs.xs)
+		self.ys = np.asarray(puffs.ys)
+
+
+
+	""" URGENT TODO : These need to be converted to work with """
+	""" 			  Numpy arrays! 						  """
+	def gradientDivergence(self, y, x, vx, vy, r, norm):
+		#print "VY: %s VX: %s\nY: %s X: %s" %(vy, vx, y, x)
+
+		#print "find gradient and Divergence"
+
+		yU = self.concentration(y+r, x, r)	* norm
+		yD = self.concentration(y-r, x, r)	* norm
+		xU = self.concentration(y, x+r, r)  * norm
+		xD = self.concentration(y, x-r, r)  * norm
+		c = self.concentration(y,x,r)       * norm
+
+		#print "yU: %s yD: %s\nxU: %s xD: %s\nc: %s "%(yU, yD, xU, xD, c)
+		#print "vx: %s vy: %s"%(vx,vy)
+		DU_dy0 = (vy>=0)*(yU-c)/(r)+(vy<0)*(c-yD)/(r)
+	  	DU_dx0 = (vx>=0)*(xU-c)/(r)+(vx<0)*(c-xD)/(r)
+
+		D2U0 = (yU+yD-2*c)/r**2+(xU+xD-2*c)/r**2
+		return DU_dx0, DU_dy0, D2U0
+
+
+	def concentration(self, y, x, r):
+		""" Use np commands """
+		#print "find concentration"
+
+		'''
+		start = time.clock()
+		xT =  [(xs<x+r) & (x-r<xs) for xs in self.xs]
+		yT =  [(ys<y+r) & (y-r<ys) for ys in self.ys]
+		both = [tx and ty for tx, ty in zip(xT, yT)]
+		tot = len( [i for i,j in enumerate(both) if j == True] )
+		elapsed = (time.clock() - start)
+		print "Time with list: %s" %elapsed
+		'''
+
+
+
+		start = time.clock()
+		xR = np.where(self.xs<x+r)
+		xU = np.where(self.xs>x-r)
+		xx = np.intersect1d(xR[0], xU[0])
+		yR = np.where(self.ys<y+r)
+		yU = np.where(self.ys>y-r)
+		yy = np.intersect1d(yR[0], yU[0])
+		fin = np.intersect1d(xx,yy)
+		tot2 = fin.size
+		elapsed = (time.clock() - start)
+		#print "Time with where: %s" %elapsed
+
+
+		#print "original way got answer: %s\nNew way got answer: %s"%(tot, tot2)
+		return tot2
+
+
 
 class puffSoA():
 	#using a structure of arrays instead of an array 
@@ -181,11 +242,15 @@ class puffSoA():
 
 	
 	def __init__(self):
-		self.xs = []
-		self.ys = []
+		self.xs = []#np.ndarray()
+		self.ys = []# np.ndarray()
 
-	#This needs to be rewritten as numpy arrays...
+	#It seems like it is easiest to generate the data using lists,
+	#but doing these calculations and storing everything in memory
+	#will be much better if everything is nparrays
 
+	#can I convert things to arrays right before I save? then 
+	#load it as arrays and do the calculations as arrays?
 
 	def gradientDivergence(self, y, x, vx, vy, r, norm):
 		#print "VY: %s VX: %s\nY: %s X: %s" %(vy, vx, y, x)
@@ -205,8 +270,6 @@ class puffSoA():
 
 		D2U0 = (yU+yD-2*c)/r**2+(xU+xD-2*c)/r**2
 		return DU_dx0, DU_dy0, D2U0
-
-
 
 
 	def concentration(self, y, x, r):
@@ -250,7 +313,7 @@ class plume():
 
 
 
-		self.plumeEtAl.add(self.puffSoA, T)
+		self.plumeEtAl.addFrame(self.puffSoA, T)
 
 
 
@@ -288,11 +351,6 @@ class plume():
 
 		self.puffSoA.xs = self.puffSoA.xs.tolist()
 		self.puffSoA.ys = self.puffSoA.ys.tolist()
-
-
-	def createPuffSoA(self, count):
-		#this is deprecated, use the puffSoA class method instead
-		self.puffSoA.add(self.param.xi, self.param.yi, count)
 
 
 

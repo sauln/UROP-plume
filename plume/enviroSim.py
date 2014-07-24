@@ -18,6 +18,7 @@ import flowField
 reload(flowField)
 
 fileName = "plumeHistMIT"
+fileName = sys.argv[1]
 
 sc = None
 
@@ -39,37 +40,27 @@ def updatePlot(T, rx, ry,c ):
 	if sc !=None:
 		sc.remove()
 	
-
 	sc = fig.ax.scatter(plum.plumeHist[int(T%(1/plum.param.dt))].ys[::150],plum.plumeHist[int(T%(1/plum.param.dt))].xs[::150])
 	fig.ax.scatter(12, 26, s = 100,c = 'r', marker='o', zorder = 1)#source
 	fig.ax.scatter(rx, ry, s = 50,c = 'g', marker='o', zorder = 1)#robot
-	fig.ax.set_title('SIMULATION, T=%s'%(T*plum.param.dt) )
+	fig.ax.set_title("Simulation of '%s'\nT=%s"%( fileName, ( T*plum.param.dt)) )
 
 	
 	fig.ax2.scatter(T, c)
 	fig.ax2.set_title('Concentration by time at point\n(%4.3f, %4.3f) c: %4.3f ' % (rx, ry, c))
 	plt.draw()
 
-	
-
-
-
-
 def confirmUpdate():
 	#this is not needed anymore
 	global dummyMsg
 	lc.publish("envUpdateConfirm", dummyMsg.encode() )
-
-
-
-
 
 def retrieve(channel, data):
 	global plum
 
 	r = 0.2
 	norm = (280.0/plum.param.den)
-	print "Normalizing factor: %s" %norm
+	#print "Normalizing factor: %s" %norm
 
 	msg = positionSim_t.decode(data)
 	x = msg.X0[0];  y = msg.X0[1]
