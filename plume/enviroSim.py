@@ -17,21 +17,17 @@ reload(plumeClass)
 import flowField
 reload(flowField)
 
-fileName = "plumeHistMIT"
-fileName = sys.argv[1]
-
-sc = None
-
-dummyMsg = positionSim_t()
 
 
-def tick(channel, data):
-	#is not necessary anymore
+def saveplot(fileName, t, r, norm):
+	global fig
+	print "SAVING PLOT"
 
-	#updatePlot(12,24)
-	pass
+	f = "../simPlots/%s_%s_%s_%s.png" %(fileName, t, r, norm)
+	savefig(f, bbox_inches='tight')
 
-def updatePlot(T, rx, ry,c ):
+
+def updatePlot(T, rx, ry,c , div, dx, dy):
 	global fig, sc
 
 	"""this replots everything each time.  I shouldn't have to do that."""
@@ -40,14 +36,18 @@ def updatePlot(T, rx, ry,c ):
 	if sc !=None:
 		sc.remove()
 	
-	sc = fig.ax.scatter(plum.plumeHist[int(T%(1/plum.param.dt))].ys[::150],plum.plumeHist[int(T%(1/plum.param.dt))].xs[::150])
+	sc = fig.ax.scatter(plum.plumeHist[int(T%(1/plum.param.dt))].\
+		ys[::150],plum.plumeHist[int(T%(1/plum.param.dt))].xs[::150])
 	fig.ax.scatter(12, 26, s = 100,c = 'r', marker='o', zorder = 1)#source
 	fig.ax.scatter(rx, ry, s = 50,c = 'g', marker='o', zorder = 1)#robot
 	fig.ax.set_title("Simulation of '%s'\nT=%s"%( fileName, ( T*plum.param.dt)) )
 
 	
 	fig.ax2.scatter(T, c)
-	fig.ax2.set_title('Concentration by time at point\n(%4.3f, %4.3f) c: %4.3f ' % (rx, ry, c))
+	fig.ax3.scatter(rx, ry)
+	fig.ax4.scatter(T, div)
+	fig.ax5.scatter(dx,dy)
+	
 	plt.draw()
 
 def confirmUpdate():
@@ -57,20 +57,34 @@ def confirmUpdate():
 
 def retrieve(channel, data):
 	global plum
-
-	r = 0.2
-	norm = (280.0/plum.param.den)
-	#print "Normalizing factor: %s" %norm
+	global dummyMsg
 
 	msg = positionSim_t.decode(data)
 	x = msg.X0[0];  y = msg.X0[1]
 	T = msg.T
-	#c = findConcentration(x,y,plume.plumeHist[index].xs, plume.plumeHist[index].ys)
+
+	c, DU_dx0, DU_dy0, vx, vy, D2U0 = findData(T, x, y)
+
+	dummyMsg.U0 = c
+	dummyMsg.DU = (DU_dx0, DU_dy0)
+	dummyMsg.DU_p = (-DU_dy0, DU_dx0)
+	dummyMsg.V0 = (vy, vx)
+	dummyMsg.D2U0 = D2U0
+	lc.publish("dataReturn", dummyMsg.encode() )
+	
+
+
+
+def findData(T, x, y):
+
 	print T
+
+
 	if( T%(1/plum.param.dt) == 0 and T != 0):
 		print "load next file"
 		t = T/(1/plum.param.dt)
 		plum.loadData(fileName, int(t)+1)
+		saveplot(fileName, int(t)+1, r , norm)
 
 	
 	#flow vector
@@ -79,60 +93,64 @@ def retrieve(channel, data):
 	c = plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r) 
 	c =  c * norm
 	
-
 	#gradient and divergence
-	DU_dx0, DU_dy0, D2U0 = \
-		plum.plumeHist[int(T%(1/plum.param.dt))].\
+	DU_dx0, DU_dy0, D2U0 = 						  \
+		plum.plumeHist[int(T%(1/plum.param.dt))]. \
 		gradientDivergence(x, y, vx, vy, r, norm)
 	
 	#print "concentration at (%s, %s): %s"%(x,y,c)
 	#print "DU_dx0: %s DU_dy0: %s\nD2U0: %s U0: %s" \
 	#	%(DU_dx0, DU_dy0, D2U0, c)
 
+	updatePlot(T, x,y,c, D2U0, DU_dx0, DU_dy0)
+	return c, DU_dx0, DU_dy0, vx, vy, D2U0
 
 
-	global dummyMsg
-	dummyMsg.U0 = c
-	dummyMsg.DU = (DU_dx0, DU_dy0)
-	dummyMsg.DU_p = (-DU_dy0, DU_dx0)
-	dummyMsg.V0 = (vy, vx)
-	dummyMsg.D2U0 = D2U0
-	lc.publish("dataReturn", dummyMsg.encode() )
-	
-	updatePlot(T, x,y,c)
-	#confirmUpdate()
-	#lc.publish("dataReturn", retMsg.encode() );
-
-
-
-index = 0
 
 print "initiate lcm"
 lc = lcm.LCM()
-subs2 = lc.subscribe("envUpdate", tick) 
+
 subs1 = lc.subscribe("envRetrieve", retrieve) 
 
 print "initiate plot"
-fig = plt.figure(1)
+plt.close("all")
+fig = plt.figure(figsize=(11,6))
 plt.clf()
 show()
+#fig.ax = fig.add_subplot(131, aspect='equal')
+#fig.ax2 = fig.add_subplot(132)
+#fig.ax3 = fig.add_subplot(133)
 
-fig.ax = fig.add_subplot(121, aspect='equal')
-fig.ax2 = fig.add_subplot(122)#, aspect='equal')
+fig.ax  = plt.subplot2grid((2,3), (0,0), rowspan= 2)
+fig.ax2 = plt.subplot2grid((2,3), (0,1))
+fig.ax3 = plt.subplot2grid((2,3), (1,1))
+fig.ax4 = plt.subplot2grid((2,3), (0,2))
+fig.ax5 = plt.subplot2grid((2,3), (1,2)) 
+
+
+fig.ax2.set_title('Concentration')
+fig.ax3.set_title('Location')
+fig.ax4.set_title('Divergence')
+fig.ax5.set_title('Gradient')
+
 
 fig.ax.axis([0,20,0,30])
-#fig.ax2.axis([0,20,0,30])
+plt.subplots_adjust(left=0.05, right=0.95, top=0.9, bottom=0.05)
 
 
+fileName = sys.argv[1]
 print "load plume data from file %s"% fileName
-
 plum = plumeClass.plumeEtAl(None, True, fileName )
 
+""" 										  """
+""" Some constants that we use throughout     """
+""" 										  """
+sc = None
+dummyMsg = positionSim_t()
 flow = flowField.flowField(plum.param.flow)
-
-
-#plume = cPickle.load( open(fileName, "rb" ) )
-
+r = 0.18
+norm = (250.0/plum.param.den)
+""" 										  """
 
 
 print "enviroSim is ready"

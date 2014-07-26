@@ -84,12 +84,18 @@ msg.length  = len(rob.dataStore.xRobotx)
 msg.T       = rob.dataStore.T
 msg.xRobotx = rob.dataStore.xRobotx
 msg.xRoboty = rob.dataStore.xRoboty
+
+
+dummyMsg.T = -1
+lcm.publish( "envRetrieve", dummyMsg.encode())
+
+
 lcm.publish( "finishSim", msg.encode() )
 #print 'published message'
 
 time.sleep(1)
 
-rob.plot()
+#rob.plot()
 
 
 #print 'done'

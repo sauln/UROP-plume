@@ -115,6 +115,14 @@ def control_SingleIntegrator(X0, Xhat, Xhatdot): #,X0_diff):
 	#print "X0_diff: %s" %X0_diff
 	return X0
 
+def savePlot():
+	global fig
+	fileName = "test"
+	f = "../simPlots/%s_%s_%s_%s.png" %(fileName, t, r, norm)
+	savefig(f, bbox_inches='tight')
+
+
+
 
 def updatePlot(Xhat_diff, Xhat):
 	global fig
