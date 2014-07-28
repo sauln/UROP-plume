@@ -55,8 +55,13 @@ l				= float(mat_contents['l_kin'])
 kk 			= 1.
 
 print "We are trying to find: %s" %threshold
-threshold = 0.5
-print "Now we are trying to find: %s"% threshold
+#threshold = 0.5
+#print "Now we are trying to find: %s"% threshold
+
+
+
+
+
 if plotTrue:
 	print "initiate plot"
 	fig = plt.figure(1)
@@ -65,7 +70,7 @@ if plotTrue:
 
 	fig.ax = fig.add_subplot(121, aspect='equal')
 	fig.ax2 = fig.add_subplot(122, aspect='equal')
-	scale = .03
+	scale = .025
 	fig.ax.axis([-scale,scale,-scale,scale])
 	#fig.ax2.axis([0,20,0,30])
 	#fig.ax2.sc = None

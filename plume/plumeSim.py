@@ -80,8 +80,8 @@ def main():
 	
 	#exampleSim()
 	print "begin experiment"
-	#plum = exampleSim()
-	plum = generateData()
+	plum = exampleSim()
+	#plum = generateData()
 	print "end experiemnt"
 	elapsed = (time.clock() - start)
 	print "Took %s time long (units?)" % elapsed
@@ -97,22 +97,15 @@ def main():
 
 	"""This works"""
 
-def generateData():
-	param = auxiliary.Parameters()
-	plum = plumeClass.plume(param)
-	for x in linspace(0, param.T, param.steps, endpoint=True):
-		print x
-		plum.tickSoA()
-		
-	plum.plumeEtAl.saveOff("plumeHist.p")
-	return plum
 
 def exampleSim():
 	param = auxiliary.Parameters()
-	plum = plumeClass.plume(param)
-	for x in linspace(0, param.T, param.steps, endpoint=True):
-		print x
-		plum.tickSoA()
+	plum = plumeClass.plume(param, "testNegheeby", False)
+
+	for x in xrange(int(param.T/param.dt)):
+	#for x in linspace(0, param.T, param.steps, endpoint=True):
+		#print x
+		plum.tickSoA(x)
 		if plotMe:
 			xp, yp = plum.getPointsSoA()
 			updatePoints(xp, yp)

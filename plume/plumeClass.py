@@ -85,28 +85,28 @@ class plumeEtAl():
 
 
 	def saveData(self, t = 0):
-
+		print "MEMORY USAGE BEFORE SAVING FILE: %s" %self.memory_usage_psutil()
 		filename = "data/%s_%s.p" %(self.fileName, int(t))
 		#fileName1 = "data/%s_%s_%s.p" %(t, self.param.dt, self.param.den)
 		f = open(filename,'wb')
 		cPickle.dump(self.__dict__,f,2)
 		f.close()
 		print "saving file to %s" %filename
-
+		print "MEMORY USAGE AFTER SAVING FILE: %s" %self.memory_usage_psutil()
 
 	def loadData(self, fileName, T = 1):
 
-		print "use cPickle to load %s" % fileName
+		#print "use cPickle to load %s" % fileName
 		start = time.clock()
-		print "MEMORY USAGE BEFORE DELETION: %s" %self.memory_usage_psutil()
+		#print "MEMORY USAGE BEFORE DELETION: %s" %self.memory_usage_psutil()
 		if hasattr(self, "plumeHist"):
-			print "delete stuff of size: %s" % sys.getsizeof(self.plumeHist)
+			#print "delete stuff of size: %s" % sys.getsizeof(self.plumeHist)
 			del self.plumeHist 
 			gc.collect()
-		print "MEMORY USAGE AFTER DELETION: %s" %self.memory_usage_psutil()
+		#print "MEMORY USAGE AFTER DELETION: %s" %self.memory_usage_psutil()
 
 		filename = "data/%s_%s.p" %(fileName, T)
-		print "Going to load data from %s" % filename
+		#print "Going to load data from %s" % filename
 		f = open(filename,'rb')
 		tmp_dict = cPickle.load(f)
 		f.close()  
@@ -309,7 +309,7 @@ class plume():
 			self.puffSoA.addPuffs(self.param.yi, self.param.xi, \
 				int(floor(self.puffQueue)))
 			self.puffQueue -= int(floor(self.puffQueue))
-		self.movePuffsSoA()
+		self.movePuffs()
 
 
 
@@ -321,45 +321,40 @@ class plume():
 	def getPointsSoA(self):
 		return self.puffSoA.xs, self.puffSoA.ys
 		
-	def movePuffsSoA(self):
+	def movePuffs(self):
 		#self.kinzelbach1990SoA()
-		self.doCythonKinzelbach()
+		#self.doKinzelbach1990()
+		self.NegheebyStep()
 		#self.doSameKinzelbach()
 
 
-	def doSameKinzelbach(self):
+	def doOriginalKinzelbach(self):
 		#this is supposed to be as similar to step.kinzelbach as possible
 		#for verification purposes
 		self.puffSoA.xs, self.puffSoA.ys = \
 			self.KinzelbachSame(self.flow, self.puffSoA.xs, self.puffSoA.ys)
 
-	def doCythonKinzelbach(self):
-		#print self.puffSoA.xs
-		#print self.puffSoA.ys
-		#print "get flow field"
+	def doKinzelbach1990(self):
 		vx, vy = self.flow.getVectorSoA(self.puffSoA.xs, self.puffSoA.ys)
-
-		#print vy, vx #this is correct
 		vx = np.asarray(vx)
 		vy = np.asarray(vy)
-
 		self.puffSoA.xs, self.puffSoA.ys = step.kinzelbach1990SoA( \
 			np.asarray(self.puffSoA.xs), \
 			np.asarray(self.puffSoA.ys), vx, vy  )
-
-
-
 		self.puffSoA.xs = self.puffSoA.xs.tolist()
 		self.puffSoA.ys = self.puffSoA.ys.tolist()
 
 
 
-
-
-	def saveTick(self):
-		#no clue how to do this...
-		pass
-
+	def NegheebyStep(self):
+		vx, vy = self.flow.getVectorSoA(self.puffSoA.xs, self.puffSoA.ys)
+		vx = np.asarray(vx)
+		vy = np.asarray(vy)
+		self.puffSoA.xs, self.puffSoA.ys = step.Negheeby2010( \
+			np.asarray(self.puffSoA.xs), \
+			np.asarray(self.puffSoA.ys), vx, vy  )
+		self.puffSoA.xs = self.puffSoA.xs.tolist()
+		self.puffSoA.ys = self.puffSoA.ys.tolist()
 
 
 	def plotPlume(self):
