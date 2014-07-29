@@ -101,12 +101,14 @@ class plumeEtAl():
 		#print "MEMORY USAGE BEFORE DELETION: %s" %self.memory_usage_psutil()
 		if hasattr(self, "plumeHist"):
 			#print "delete stuff of size: %s" % sys.getsizeof(self.plumeHist)
+			print "removing plumeHist"
 			del self.plumeHist 
 			gc.collect()
 		#print "MEMORY USAGE AFTER DELETION: %s" %self.memory_usage_psutil()
 
+	
 		filename = "data/%s_%s.p" %(fileName, T)
-		#print "Going to load data from %s" % filename
+		print "Going to load data from %s" % filename
 		f = open(filename,'rb')
 		tmp_dict = cPickle.load(f)
 		f.close()  
@@ -184,10 +186,10 @@ class frame():
 
 		#print "find gradient and Divergence"
 
-		yU = self.concentration(y+r, x, r)	* norm
-		yD = self.concentration(y-r, x, r)	* norm
-		xU = self.concentration(y, x+r, r)  * norm
-		xD = self.concentration(y, x-r, r)  * norm
+		yU = self.concentration(y+2*r, x, r)	* norm
+		yD = self.concentration(y-2*r, x, r)	* norm
+		xU = self.concentration(y, x+2*r, r)  * norm
+		xD = self.concentration(y, x-2*r, r)  * norm
 		c = self.concentration(y,x,r)       * norm
 
 		#print "yU: %s yD: %s\nxU: %s xD: %s\nc: %s "%(yU, yD, xU, xD, c)
@@ -212,9 +214,6 @@ class frame():
 		elapsed = (time.clock() - start)
 		print "Time with list: %s" %elapsed
 		'''
-
-
-
 		start = time.clock()
 		xR = np.where(self.xs<x+r)
 		xU = np.where(self.xs>x-r)

@@ -53,10 +53,10 @@ dt 			= float(mat_contents['dt'])
 Dt 			= float(mat_contents['Dt'])
 T_thresh 	= float(mat_contents['T_thresh'])
 
-T_thresh = 5
+T_thresh =5
 T_thresh = T_thresh*(1/Dt)
 dummyMsg = positionSim_t()
-ts = 15
+ts = 6
 T_thresh
 
 

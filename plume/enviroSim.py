@@ -16,7 +16,7 @@ import plumeClass
 reload(plumeClass)
 import flowField
 reload(flowField)
-
+plotTrue = False
 
 
 def saveplot(fileName, t, r, norm):
@@ -36,8 +36,8 @@ def updatePlot(T, rx, ry,c , div, dx, dy):
 	if sc !=None:
 		sc.remove()
 	
-	sc = fig.ax.scatter(plum.plumeHist[int(T%(1/plum.param.dt))].\
-		ys[::150],plum.plumeHist[int(T%(1/plum.param.dt))].xs[::150])
+	#sc = fig.ax.scatter(plum.plumeHist[int(T%(1/plum.param.dt))].\
+	#	ys[::150],plum.plumeHist[int(T%(1/plum.param.dt))].xs[::150])
 	fig.ax.scatter(12, 26, s = 100,c = 'r', marker='o', zorder = 1)#source
 	fig.ax.scatter(rx, ry, s = 50,c = 'g', marker='o', zorder = 1)#robot
 	fig.ax.set_title("Simulation of '%s'\nT=%s"%( fileName, ( T*plum.param.dt)) )
@@ -45,8 +45,10 @@ def updatePlot(T, rx, ry,c , div, dx, dy):
 	
 	fig.ax2.scatter(T, c)
 	fig.ax3.scatter(rx, ry)
-	fig.ax4.scatter(T, div)
-	fig.ax5.scatter(dx,dy)
+	#fig.ax4.scatter(T, dx)
+	#fig.ax5.scatter(T, dy)
+	#fig.ax4.scatter(T, div)
+	#fig.ax5.scatter(dx,dy)
 	
 	plt.draw()
 
@@ -102,7 +104,9 @@ def findData(T, x, y):
 	#print "DU_dx0: %s DU_dy0: %s\nD2U0: %s U0: %s" \
 	#	%(DU_dx0, DU_dy0, D2U0, c)
 
-	updatePlot(T, x,y,c, D2U0, DU_dx0, DU_dy0)
+	if plotTrue:
+		updatePlot(T, x,y,c, D2U0, DU_dx0, DU_dy0)
+
 	return c, DU_dx0, DU_dy0, vx, vy, D2U0
 
 
@@ -112,30 +116,32 @@ lc = lcm.LCM()
 
 subs1 = lc.subscribe("envRetrieve", retrieve) 
 
-print "initiate plot"
-plt.close("all")
-fig = plt.figure(figsize=(11,6))
-plt.clf()
-show()
-#fig.ax = fig.add_subplot(131, aspect='equal')
-#fig.ax2 = fig.add_subplot(132)
-#fig.ax3 = fig.add_subplot(133)
 
-fig.ax  = plt.subplot2grid((2,3), (0,0), rowspan= 2)
-fig.ax2 = plt.subplot2grid((2,3), (0,1))
-fig.ax3 = plt.subplot2grid((2,3), (1,1))
-fig.ax4 = plt.subplot2grid((2,3), (0,2))
-fig.ax5 = plt.subplot2grid((2,3), (1,2)) 
+if plotTrue:
+	print "initiate plot"
+	plt.close("all")
+	fig = plt.figure(figsize=(11,6))
+	plt.clf()
+	show()
 
-
-fig.ax2.set_title('Concentration')
-fig.ax3.set_title('Location')
-fig.ax4.set_title('Divergence')
-fig.ax5.set_title('Gradient')
+	#fig.ax = fig.add_subplot(131, aspect='equal')
+	#fig.ax2 = fig.add_subplot(132)
+	#fig.ax3 = fig.add_subplot(133)
+	fig.ax  = plt.subplot2grid((2,3), (0,0), rowspan= 2)
+	fig.ax2 = plt.subplot2grid((2,3), (0,1))
+	fig.ax3 = plt.subplot2grid((2,3), (1,1))
+	fig.ax4 = plt.subplot2grid((2,3), (0,2))
+	fig.ax5 = plt.subplot2grid((2,3), (1,2)) 
 
 
-fig.ax.axis([0,20,0,30])
-plt.subplots_adjust(left=0.05, right=0.95, top=0.9, bottom=0.05)
+	fig.ax2.set_title('Concentration')
+	fig.ax3.set_title('Location')
+	fig.ax4.set_title('Divergence')
+	fig.ax5.set_title('Gradient')
+
+
+	fig.ax.axis([0,20,0,30])
+	plt.subplots_adjust(left=0.05, right=0.95, top=0.9, bottom=0.05)
 
 
 fileName = sys.argv[1]
@@ -148,8 +154,8 @@ plum = plumeClass.plumeEtAl(None, True, fileName )
 sc = None
 dummyMsg = positionSim_t()
 flow = flowField.flowField(plum.param.flow)
-r = 0.18
-norm = (250.0/plum.param.den)
+r = 0.5
+norm = (5.0/plum.param.den)
 """ 										  """
 
 
