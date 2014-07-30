@@ -200,20 +200,19 @@ class frame():
 		D2U0 = (yU+yD-2*c)/r**2+(xU+xD-2*c)/r**2
 		return DU_dx0, DU_dy0, D2U0
 
+	def stepConcentration(self, y, x, r):
+		return step.concentration(np.asarray(self.ys), \
+			np.asarray(self.xs), y, x,r)
 
 	def concentration(self, y, x, r):
+		#return originalConcentration(y,x,r)
+		return self.stepConcentration(y,x,r)
+
+
+	def originalConcentration(self, y, x, r):
 		""" Use np commands """
 		#print "find concentration"
 
-		'''
-		start = time.clock()
-		xT =  [(xs<x+r) & (x-r<xs) for xs in self.xs]
-		yT =  [(ys<y+r) & (y-r<ys) for ys in self.ys]
-		both = [tx and ty for tx, ty in zip(xT, yT)]
-		tot = len( [i for i,j in enumerate(both) if j == True] )
-		elapsed = (time.clock() - start)
-		print "Time with list: %s" %elapsed
-		'''
 		start = time.clock()
 		xR = np.where(self.xs<x+r)
 		xU = np.where(self.xs>x-r)
@@ -224,10 +223,7 @@ class frame():
 		fin = np.intersect1d(xx,yy)
 		tot2 = fin.size
 		elapsed = (time.clock() - start)
-		#print "Time with where: %s" %elapsed
-
-
-		#print "original way got answer: %s\nNew way got answer: %s"%(tot, tot2)
+		
 		return tot2
 
 
@@ -271,14 +267,22 @@ class puffSoA():
 		return DU_dx0, DU_dy0, D2U0
 
 
-	def concentration(self, y, x, r):
+	def stepConcentration(self, y, x, r):
+		return step.concentration(np.asarray(self.ys), \
+			np.asarray(self.xs), y, x,r)
 
-		start = time.clock()
+	def concentration(self, y, x, r):
+		#return originalConcentration(y,x,r)
+		return self.stepConcentration(y,x,r)
+
+	def originalConcentration(self, y,x,r):
+		#this takes by far the most time - lets try to optimize this
+		#start = time.clock()
 		xT =  [(xs<x+r) & (x-r<xs) for xs in self.xs]
 		yT =  [(ys<y+r) & (y-r<ys) for ys in self.ys]
 		both = [tx and ty for tx, ty in zip(xT, yT)]
 		tot = len( [i for i,j in enumerate(both) if j == True] )
-		elapsed = (time.clock() - start)
+		#elapsed = (time.clock() - start)
 		#print "list way took %s seconds long\n	answer: %s" % (elapsed,tot)
 
 		return tot

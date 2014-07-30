@@ -1,5 +1,5 @@
 import sys
-
+import os
 
 from numpy import linalg as LA
 import numpy as np
@@ -16,7 +16,7 @@ import plumeClass
 reload(plumeClass)
 import flowField
 reload(flowField)
-plotTrue = False
+plotTrue = True
 
 
 def saveplot(fileName, t, r, norm):
@@ -36,6 +36,19 @@ def updatePlot(T, rx, ry,c , div, dx, dy):
 	if sc !=None:
 		sc.remove()
 	
+	if T%100 ==0:
+		heatmap, xedges, yedges = np.histogram2d(plum.plumeHist[-1].\
+			ys[::], plum.plumeHist[-1].xs[::], bins=50)
+
+		heatmap = np.rot90(heatmap)
+		heatmap = np.flipud(heatmap)
+		Hmasked = np.ma.masked_where(heatmap==0,heatmap) # Mask pixels with a value of zero
+		extent = [xedges[0], xedges[-1], yedges[-1], yedges[0]]
+		fig.ax.imshow(Hmasked, extent = extent, vmin=0, vmax=200)
+
+
+
+
 	#sc = fig.ax.scatter(plum.plumeHist[int(T%(1/plum.param.dt))].\
 	#	ys[::150],plum.plumeHist[int(T%(1/plum.param.dt))].xs[::150])
 	fig.ax.scatter(12, 26, s = 100,c = 'r', marker='o', zorder = 1)#source
@@ -65,6 +78,8 @@ def retrieve(channel, data):
 	x = msg.X0[0];  y = msg.X0[1]
 	T = msg.T
 
+	if T == -1:
+		os._exit(1)# break
 	c, DU_dx0, DU_dy0, vx, vy, D2U0 = findData(T, x, y)
 
 	dummyMsg.U0 = c
@@ -81,12 +96,14 @@ def findData(T, x, y):
 
 	print T
 
+	
 
 	if( T%(1/plum.param.dt) == 0 and T != 0):
 		print "load next file"
 		t = T/(1/plum.param.dt)
 		plum.loadData(fileName, int(t)+1)
-		saveplot(fileName, int(t)+1, r , norm)
+		if plotTrue:
+			saveplot(fileName, int(t)+1, r , norm)
 
 	
 	#flow vector
@@ -143,8 +160,15 @@ if plotTrue:
 	fig.ax.axis([0,20,0,30])
 	plt.subplots_adjust(left=0.05, right=0.95, top=0.9, bottom=0.05)
 
+print sys.argv[1]
 
 fileName = sys.argv[1]
+
+
+
+
+
+
 print "load plume data from file %s"% fileName
 plum = plumeClass.plumeEtAl(None, True, fileName )
 

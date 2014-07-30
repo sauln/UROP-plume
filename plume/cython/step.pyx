@@ -14,6 +14,29 @@ ctypedef np.float_t DTYPE_t
 #as of 7/8/14 the step.kinzelbach1990SoA takes 0.084 seconds per call
 #25.193 or 33.607 second simulation is spent in kinzelbach.
 #lets try to optomize
+
+@cython.boundscheck(False)
+def concentration(np.ndarray[DTYPE_t, ndim=1] ys, \
+	np.ndarray[DTYPE_t, ndim=1] xs, float y, float x, float r):
+
+	cdef np.ndarray xT, yT, xU, yU, yI, xI, both
+	cdef int tot
+	cdef float tx, ty, i, j
+
+	xT = np.where(xs < x + r)[0]
+	xU = np.where(x - r < xs)[0]
+	yT = np.where(ys < y + r)[0]
+	yU = np.where(y - r < ys)[0]
+
+	yI = np.intersect1d( yU, yT )
+	xI = np.intersect1d( xU, xT )
+	both = np.intersect1d(yI, xI)
+	return both.size
+	
+
+
+
+
 @cython.boundscheck(False)
 def kinzelbach1990(np.ndarray[DTYPE_t, ndim=1] x, np.ndarray[DTYPE_t, ndim=1] y, np.ndarray[DTYPE_t, ndim=1] vx, np.ndarray[DTYPE_t, ndim=1] vy):
 	#for some reason x and y got switched - 

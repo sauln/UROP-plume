@@ -51,7 +51,7 @@ u				= matrix(mat_contents['u_kin'])
 c0				= float(mat_contents['c01'])
 l				= float(mat_contents['l_kin'])
 
-
+c1 = -c1
 kk 			= 1.
 
 k1 = 0
@@ -109,37 +109,39 @@ def observer(X0, Xhat, Xhatdot, V0, DU, DU_p, U0, D2U0):
 	#we expect this to happen a lot
 
 	
-	print "V0: %s X0: %s Xhat: %s Xhatdot: %s"%(V0[1], X0[1], Xhat[1], Xhatdot[1])
+	#print "V0: %s X0: %s Xhat: %s Xhatdot: %s"%(V0[1], X0[1], Xhat[1], Xhatdot[1])
 
 
-	dotXhat_1 		= float(  -( (V0.H * DU) + k1 *D2U0 + k2 * U0 ) ) \
-							 * divide(DU, (LA.norm(DU)**2))
-
-	#print shape(dotXhat_1)
-	for e in xrange(shape(dotXhat_1)[0]):
-		if isnan(dotXhat_1[e]):
-			print "corrected dotXhat_1"
-			dotXhat_1[e] = 0
-				
-	dotXhat_2 		= -DU*(DU.H * (Xhat[:, 0] - X0[:,0]) + U0 - threshold)
-	for e in xrange(shape(dotXhat_2)[0]):
-		if isnan(dotXhat_2[e]):
-			print "corrected dotXhat_2"
-			dotXhat_2[e] = 0
-
-	dotXhat_2 		= k3*dotXhat_2/ LA.norm(dotXhat_2)
-	for e in xrange(shape(dotXhat_2)[0]):
-		if isnan(dotXhat_2[e]):
-			print "corrected dotXhat_2.2"
-			dotXhat_2[e] = 0
-
-	dotXhat_3 		= c1*DU_p
-	dotXhat   		= dotXhat_1+dotXhat_2+dotXhat_3
 	
 	global count
-	if count%2 ==0:
-		Xhatdot 		= dotXhat
 	count +=1
+	if count%5 ==0:
+		dotXhat_1 		= float(  -( (V0.H * DU) + k1 *D2U0 + k2 * U0 ) ) \
+			* divide(DU, (LA.norm(DU)**2))
+		#print shape(dotXhat_1)
+		for e in xrange(shape(dotXhat_1)[0]):
+			if isnan(dotXhat_1[e]):
+				print "corrected dotXhat_1"
+				dotXhat_1[e] = 0
+				
+		dotXhat_2 		= -DU*(DU.H * (Xhat[:, 0] - X0[:,0]) + U0 - threshold)
+		for e in xrange(shape(dotXhat_2)[0]):
+			if isnan(dotXhat_2[e]):
+				print "corrected dotXhat_2"
+				dotXhat_2[e] = 0
+
+		dotXhat_2 		= k3*dotXhat_2/ LA.norm(dotXhat_2)
+		for e in xrange(shape(dotXhat_2)[0]):
+			if isnan(dotXhat_2[e]):
+				print "corrected dotXhat_2.2"
+				dotXhat_2[e] = 0
+
+		dotXhat_3 		= c1*DU_p
+		dotXhat   		= dotXhat_1+dotXhat_2+dotXhat_3
+	
+
+		Xhatdot 		= dotXhat
+
 
 	#this is the control
 	Xhat_diff 		= Dt * Xhatdot #(Dt * mysaturation(Xhatdot, Xhatdot_max)).H
