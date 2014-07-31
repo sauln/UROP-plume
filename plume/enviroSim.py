@@ -37,8 +37,8 @@ def updatePlot(T, rx, ry,c , div, dx, dy):
 		sc.remove()
 	
 	if T%100 ==0:
-		heatmap, xedges, yedges = np.histogram2d(plum.plumeHist[-1].\
-			ys[::], plum.plumeHist[-1].xs[::], bins=50)
+		heatmap, xedges, yedges = np.histogram2d(plum.plumeHist[int(ceil(T%500))].\
+			ys[::], plum.plumeHist[int(ceil(T%500))].xs[::], bins=50)
 
 		heatmap = np.rot90(heatmap)
 		heatmap = np.flipud(heatmap)
@@ -57,11 +57,12 @@ def updatePlot(T, rx, ry,c , div, dx, dy):
 
 	
 	fig.ax2.scatter(T, c)
+	fig.ax2.set_title("C: %s" %c)
 	fig.ax3.scatter(rx, ry)
 	#fig.ax4.scatter(T, dx)
 	#fig.ax5.scatter(T, dy)
-	#fig.ax4.scatter(T, div)
-	#fig.ax5.scatter(dx,dy)
+	fig.ax4.scatter(T, div)
+	fig.ax5.scatter(T, dx,dy)
 	
 	plt.draw()
 
@@ -96,14 +97,15 @@ def findData(T, x, y):
 
 	print T
 
-	
-
-	if( T%(1/plum.param.dt) == 0 and T != 0):
+	if( T*plum.param.dt >= fileNumber and T != 0):
+		'''if we are inside of the next file, load it'''
+		global fileNumber
+		fileNumber = int( T/(1/plum.param.dt) ) + 1 
 		print "load next file"
 		t = T/(1/plum.param.dt)
-		plum.loadData(fileName, int(t)+1)
+		plum.loadData(fileName, fileNumber)
 		if plotTrue:
-			saveplot(fileName, int(t)+1, r , norm)
+			saveplot(fileName, fileNumber, r , norm)
 
 	
 	#flow vector
@@ -148,7 +150,7 @@ if plotTrue:
 	fig.ax2 = plt.subplot2grid((2,3), (0,1))
 	fig.ax3 = plt.subplot2grid((2,3), (1,1))
 	fig.ax4 = plt.subplot2grid((2,3), (0,2))
-	fig.ax5 = plt.subplot2grid((2,3), (1,2)) 
+	fig.ax5 = plt.subplot2grid((2,3), (1,2), projection='3d') 
 
 
 	fig.ax2.set_title('Concentration')
@@ -180,6 +182,8 @@ dummyMsg = positionSim_t()
 flow = flowField.flowField(plum.param.flow)
 r = 0.5
 norm = (5.0/plum.param.den)
+fileNumber = 1
+
 """ 										  """
 
 

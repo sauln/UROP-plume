@@ -233,9 +233,6 @@ class puffSoA():
 	#of structures allows us to do calculations in a
 	#very pythonic way.  Is it actually faster though?
 
-
-
-	
 	def __init__(self):
 		self.xs = []#np.ndarray()
 		self.ys = []# np.ndarray()
@@ -249,9 +246,6 @@ class puffSoA():
 
 	def gradientDivergence(self, y, x, vx, vy, r, norm):
 		#print "VY: %s VX: %s\nY: %s X: %s" %(vy, vx, y, x)
-
-
-
 		yU = self.concentration(y+r, x, r)	* norm
 		yD = self.concentration(y-r, x, r)	* norm
 		xU = self.concentration(y, x+r, r)  * norm
@@ -313,13 +307,7 @@ class plume():
 				int(floor(self.puffQueue)))
 			self.puffQueue -= int(floor(self.puffQueue))
 		self.movePuffs()
-
-
-
 		self.plumeEtAl.addFrame(self.puffSoA, T)
-
-
-
 
 	def getPointsSoA(self):
 		return self.puffSoA.xs, self.puffSoA.ys

@@ -4,6 +4,10 @@ from senlcm import *
 from numpy import *
 import matplotlib.pyplot as plt
 
+from robot_model_par import theta
+
+
+
 class robot():
 	def __init__(self):
 		self.dataStore = dataStore()
@@ -13,9 +17,10 @@ class robot():
 		self.DU_p = [-0.0909, 0.9959]
 		self.U0   = 0.3375
 		self.D2U0 = 0.2109 
-		self.Xhatdot = [12.0, 24.0]
-		self.X0 = [10.0, 24.0]
-		self.Xhat = [11.0, 25.0]
+		self.Xhatdot = [0.2, 0.2]
+		self.X0 = [11.0, 24.0]
+		self.Xhat = [11.0, 24.0]
+		self.theta = theta
 		self.msg = positionSim_t()
 
 	def plot(self):
@@ -39,15 +44,33 @@ class robot():
 				self.Xhat[0], self.Xhat[1])
 
 	def buildCONMsg(self):#create the message that gets sent to the control algorithm
+		msg = positionSim_t()
+		msg.V0   = self.V0
+		msg.DU   = self.DU
+		msg.DU_p = self.DU_p
+		msg.U0   = self.U0
+		msg.D2U0 = self.D2U0
+		msg.Xhatdot = self.Xhatdot
+		msg.X0 = self.X0
+		msg.Xhat = self.Xhat
+		msg.theta = self.theta
+		return msg
+
+		"""
+
 		self.msg.V0   = self.V0
 		self.msg.DU   = self.DU
 		self.msg.DU_p = self.DU_p
 		self.msg.U0   = self.U0
 		self.msg.D2U0 = self.D2U0
-		self.msg.Xhatdot = self.Xhatdot
+		#self.msg.Xhatdot = self.Xhatdot
 		self.msg.X0 = self.X0
-		self.msg.Xhat = self.Xhat
+		self.msg.theta = self.theta
+		#self.msg.Xhat = self.Xhat
 		return self.msg
+
+		"""
+
 
 	def buildENVMsg(self):#create the message that gets sent to the environment
 		msg = positionSim_t()
@@ -62,9 +85,11 @@ class robot():
 		self.D2U0 = msg.D2U0
 
 	def extractCONMsg(self, msg):#save off return data from the control
-		self.Xhatdot = matrix(msg.Xhatdot).H
+		
+		self.theta = msg.theta
+		#self.Xhatdot = matrix(msg.Xhatdot).H
 		self.X0      = matrix(msg.X0).H
-		self.Xhat    = matrix(msg.Xhat).H
+		#self.Xhat    = matrix(msg.Xhat).H
 
 
 class dataStore():

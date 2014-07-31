@@ -28,7 +28,7 @@ k41 = 1/(m33*l)
 A  = diag( [k11,k21] )
 B  = ([k31, k31] ,[-k41, k41])
 
-zreal = matrix([[10],[5]])
+zreal = matrix([[11],[24]])
 theta = 2*pi*random.rand(1,1)
 x_sur = zreal-l0*matrix([[float(cos(theta))],[float(sin(theta))]])
 xvector = zeros((2,0))

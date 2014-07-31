@@ -47,25 +47,23 @@ subEnv = lcm.subscribe("dataReturn", envHandler)
 subCon = lcm.subscribe("conReturn", conHandler) 
 
 
-mat_contents = sio.loadmat('constants.mat')
-ts 			= float(mat_contents['ts'])
-dt 			= float(mat_contents['dt'])
-Dt 			= float(mat_contents['Dt'])
-T_thresh 	= float(mat_contents['T_thresh'])
-
+Dt = 0.002
 T_thresh =3
-T_thresh = T_thresh*(1/Dt)
-dummyMsg = positionSim_t()
 ts = 10
-T_thresh
+T_thresh = T_thresh*(1/Dt)
+
+dummyMsg = positionSim_t()
+
+print "Time steps of: %s\nBegin robot at %s\nUntil %s"%(Dt, T_thresh, ts/Dt)
 
 
 
 for T in xrange(int(ts/Dt)):
 
-	print T
+	
 	
 	if T >= T_thresh:
+		print T
 		dummyMsg.T = T
 		dummyMsg.X0 = rob.X0
 		lcm.publish("envRetrieve", dummyMsg.encode())
@@ -89,19 +87,8 @@ msg.xRoboty = rob.dataStore.xRoboty
 
 dummyMsg.T = -1
 lcm.publish( "envRetrieve", dummyMsg.encode())
-
-
 lcm.publish( "finishSim", msg.encode() )
-#print 'published message'
 
 time.sleep(1)
-
-#rob.plot()
-
-
-#print 'done'
-
-
-
 
 
