@@ -17,16 +17,16 @@ ctypedef np.float_t DTYPE_t
 
 @cython.boundscheck(False)
 def concentration(np.ndarray[DTYPE_t, ndim=1] ys, \
-	np.ndarray[DTYPE_t, ndim=1] xs, float y, float x, float r):
+	np.ndarray[DTYPE_t, ndim=1] xs, float y, float x, float r, int sparse = 1):
 
 	cdef np.ndarray xT, yT, xU, yU, yI, xI, both
 	cdef int tot
 	cdef float tx, ty, i, j
 
-	xT = np.where(xs < x + r)[0]
-	xU = np.where(x - r < xs)[0]
-	yT = np.where(ys < y + r)[0]
-	yU = np.where(y - r < ys)[0]
+	xT = np.where(xs[::sparse] < x + r)[0]
+	xU = np.where(x - r < xs[::sparse])[0]
+	yT = np.where(ys[::sparse] < y + r)[0]
+	yU = np.where(y - r < ys[::sparse])[0]
 
 	yI = np.intersect1d( yU, yT )
 	xI = np.intersect1d( xU, xT )

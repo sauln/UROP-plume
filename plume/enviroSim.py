@@ -36,7 +36,7 @@ def updatePlot(T, rx, ry,c , div, dx, dy):
 	if sc !=None:
 		sc.remove()
 	
-	if T%100 ==0:
+	if T%100 == 0:
 		heatmap, xedges, yedges = np.histogram2d(plum.plumeHist[int(ceil(T%500))].\
 			ys[::], plum.plumeHist[int(ceil(T%500))].xs[::], bins=50)
 
@@ -97,6 +97,9 @@ def findData(T, x, y):
 
 	print T
 
+
+	""" This check and load deal should be put inside of the 
+		plume class, not the simulator					 """
 	if( T*plum.param.dt >= fileNumber and T != 0):
 		'''if we are inside of the next file, load it'''
 		global fileNumber
@@ -172,11 +175,13 @@ fileName = sys.argv[1]
 
 
 print "load plume data from file %s"% fileName
-plum = plumeClass.plumeEtAl(None, True, fileName )
 
 """ 										  """
 """ Some constants that we use throughout     """
 """ 										  """
+
+plum = plumeClass.plumeEtAl(None, True, fileName )
+
 sc = None
 dummyMsg = positionSim_t()
 flow = flowField.flowField(plum.param.flow)

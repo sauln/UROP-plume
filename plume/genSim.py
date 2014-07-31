@@ -47,11 +47,6 @@ def generateData(plum):
 	#for x in linspace(0, plum.param.T, plum.param.steps, endpoint=True):
 
 	for x in xrange(int(plum.param.T/plum.param.dt)):
-		#if timer[cT] < x:
-		#	print "%s seconds complete" %timer[cT]
-		#	cT +=1
-			#print "sanity check"
-			#plum.plotPlume()
 		plum.tickSoA(x)
 		
 

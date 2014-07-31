@@ -182,6 +182,7 @@ class frame():
 	""" URGENT TODO : These need to be converted to work with """
 	""" 			  Numpy arrays! 						  """
 	def gradientDivergence(self, y, x, vx, vy, r, norm):
+		print "using gradDiv in FRAME"
 		#print "VY: %s VX: %s\nY: %s X: %s" %(vy, vx, y, x)
 
 		#print "find gradient and Divergence"
@@ -200,13 +201,13 @@ class frame():
 		D2U0 = (yU+yD-2*c)/r**2+(xU+xD-2*c)/r**2
 		return DU_dx0, DU_dy0, D2U0
 
-	def stepConcentration(self, y, x, r):
+	def stepConcentration(self, y, x, r, sparse):
 		return step.concentration(np.asarray(self.ys), \
-			np.asarray(self.xs), y, x,r)
+			np.asarray(self.xs), y, x,r, sparse)
 
-	def concentration(self, y, x, r):
+	def concentration(self, y, x, r, sparse = 1):
 		#return originalConcentration(y,x,r)
-		return self.stepConcentration(y,x,r)
+		return self.stepConcentration(y,x,r, sparse)
 
 
 	def originalConcentration(self, y, x, r):
@@ -245,6 +246,7 @@ class puffSoA():
 	#load it as arrays and do the calculations as arrays?
 
 	def gradientDivergence(self, y, x, vx, vy, r, norm):
+		print "using gradDiv in PuffSOA"
 		#print "VY: %s VX: %s\nY: %s X: %s" %(vy, vx, y, x)
 		yU = self.concentration(y+r, x, r)	* norm
 		yD = self.concentration(y-r, x, r)	* norm
