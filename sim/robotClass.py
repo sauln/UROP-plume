@@ -4,7 +4,7 @@ from senlcm import *
 from numpy import *
 import matplotlib.pyplot as plt
 
-from robot_model_par import theta
+from constants import theta
 
 
 
@@ -18,9 +18,10 @@ class robot():
 		self.U0   = 0.3375
 		self.D2U0 = 0.2109 
 		self.Xhatdot = [0.2, 0.2]
-		self.X0 = [11.0, 24.0]
-		self.Xhat = [11.0, 24.0]
+		self.X0 = [10.0, 24.0]
+		self.Xhat = [10.0, 24.0]
 		self.theta = theta
+		self.con = zeros(5)
 		self.msg = positionSim_t()
 
 	def plot(self):
@@ -46,10 +47,12 @@ class robot():
 	def buildCONMsg(self):#create the message that gets sent to the control algorithm
 		msg = positionSim_t()
 		msg.V0   = self.V0
-		msg.DU   = self.DU
-		msg.DU_p = self.DU_p
-		msg.U0   = self.U0
-		msg.D2U0 = self.D2U0
+		msg.con = self.con
+
+		#msg.DU   = self.DU
+		#msg.DU_p = self.DU_p
+		#msg.U0   = self.U0
+		#msg.D2U0 = self.D2U0
 		msg.Xhatdot = self.Xhatdot
 		msg.X0 = self.X0
 		msg.Xhat = self.Xhat
@@ -78,11 +81,14 @@ class robot():
 		return msg
 
 	def extractENVMsg(self, msg):#save off return data from the environment (sense environment)
-		self.V0   = msg.V0
-		self.DU   = msg.DU
-		self.DU_p = msg.DU_p
-		self.U0   = msg.U0
-		self.D2U0 = msg.D2U0
+		self.con = msg.con
+		self.V0 = msg.V0
+
+		#self.V0   = msg.V0
+		#self.DU   = msg.DU
+		#self.DU_p = msg.DU_p
+		#self.U0   = msg.U0
+		#self.D2U0 = msg.D2U0
 
 	def extractCONMsg(self, msg):#save off return data from the control
 		

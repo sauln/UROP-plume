@@ -32,10 +32,10 @@ import matplotlib.pyplot as plt
 
 class Parameters():
 	def __init__(self):
-		self.T = 10.0
+		self.T = 12.0
 		self.dt = 0.002
-		self.den = 50000.0
-		self.flow = 'simple'#'mit'# 'simple' #'mit'# or 'simple'
+		self.den = 5000.0
+		self.flow = 'mit'#'simple'#'mit'# 'simple' #'mit'# or 'simple'
 		self.std = 1.0
 		self.adjust = 3.0/self.den
 		self.xi = 10.0

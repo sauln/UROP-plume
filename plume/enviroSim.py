@@ -18,7 +18,7 @@ import flowField
 reload(flowField)
 plotTrue = True
 
-
+from constants import r
 
 """ 
 	going to rearrange the control and estimation part so that
@@ -27,6 +27,27 @@ plotTrue = True
 
 """
 
+
+print sys.argv[1]
+
+fileName = sys.argv[1]
+
+print "load plume data from file %s"% fileName
+
+""" 										  """
+""" Some constants that we use throughout     """
+""" 										  """
+
+plum = plumeClass.plumeEtAl(None, True, fileName )
+
+sc = None
+dummyMsg = positionSim_t()
+flow = flowField.flowField(plum.param.flow)
+#r = 0.5
+norm = (25.0/plum.param.den)
+fileNumber = 1
+
+""" 										  """
 
 
 
@@ -51,7 +72,7 @@ def saveplot(fileName, t, r, norm):
 	savefig(f, bbox_inches='tight')
 
 
-def updatePlot(T, rx, ry,c , div, dx, dy):
+def updatePlot(T, rx, ry,c ):#, div, dx, dy):
 	global fig, sc
 
 	"""this replots everything each time.  I shouldn't have to do that."""
@@ -85,8 +106,8 @@ def updatePlot(T, rx, ry,c , div, dx, dy):
 	fig.ax3.scatter(rx, ry)
 	#fig.ax4.scatter(T, dx)
 	#fig.ax5.scatter(T, dy)
-	fig.ax4.scatter(T, div)
-	fig.ax5.scatter(T, dx,dy)
+	#fig.ax4.scatter(T, div)
+	#fig.ax5.scatter(T, dx,dy)
 	
 	plt.draw()
 
@@ -109,13 +130,13 @@ def retrieve(channel, data):
 
 
 	"""now find data should only return the 5 cs and the flow vector """
-	c, DU_dx0, DU_dy0, vx, vy, D2U0 = findData(T, x, y)
+	c, vx, vy = findData(T, x, y)
 
-	dummyMsg.U0 = c
-	dummyMsg.DU = (DU_dx0, DU_dy0)
-	dummyMsg.DU_p = (-DU_dy0, DU_dx0)
+	dummyMsg.con = c
+	#dummyMsg.DU = (DU_dx0, DU_dy0)
+	#dummyMsg.DU_p = (-DU_dy0, DU_dx0)
 	dummyMsg.V0 = (vy, vx)
-	dummyMsg.D2U0 = D2U0
+	#dummyMsg.D2U0 = D2U0
 	lc.publish("dataReturn", dummyMsg.encode() )
 	
 
@@ -142,28 +163,39 @@ def findData(T, x, y):
 	#flow vector
 	vy, vx = flow.getVal(y,x)
 	#concentration
+	c = []
+	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r)  * norm)
+	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x+(2*r), y, r)  * norm)
+	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x-(2*r), y, r)  * norm)
+	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y+(2*r), r) * norm)
+	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y-(2*r), r)  * norm)
 
-	
-	c = plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r) 
+	#print "from environment: %s" %c
+
+	#yU = self.concentration(y+2*r, x, r)	* norm
+	#yD = self.concentration(y-2*r, x, r)	* norm
+	#xU = self.concentration(y, x+2*r, r)  * norm
+	#xD = self.concentration(y, x-2*r, r)  * norm
+	#c = self.concentration(y,x,r)       * norm
 
 
-
-
-	c =  c * norm
+	#c =  c * norm
 	
 	#gradient and divergence
-	DU_dx0, DU_dy0, D2U0 = 						  \
-		plum.plumeHist[int(T%(1/plum.param.dt))]. \
-		gradientDivergence(x, y, vx, vy, r, norm)
+	#DU_dx0, DU_dy0, D2U0 = 						  \
+	#	plum.plumeHist[int(T%(1/plum.param.dt))]. \
+	#	gradientDivergence(x, y, vx, vy, r, norm)
 	
 	#print "concentration at (%s, %s): %s"%(x,y,c)
 	#print "DU_dx0: %s DU_dy0: %s\nD2U0: %s U0: %s" \
 	#	%(DU_dx0, DU_dy0, D2U0, c)
 
 	if plotTrue:
-		updatePlot(T, x,y,c, D2U0, DU_dx0, DU_dy0)
+		updatePlot(T, x,y,c[0]) #, D2U0, DU_dx0, DU_dy0)
 
-	return c, DU_dx0, DU_dy0, vx, vy, D2U0
+
+	return c, vx, vy 
+	#return c, DU_dx0, DU_dy0, vx, vy, D2U0
 
 
 
@@ -198,32 +230,6 @@ if plotTrue:
 
 	fig.ax.axis([0,20,0,30])
 	plt.subplots_adjust(left=0.05, right=0.95, top=0.9, bottom=0.05)
-
-print sys.argv[1]
-
-fileName = sys.argv[1]
-
-
-
-
-
-
-print "load plume data from file %s"% fileName
-
-""" 										  """
-""" Some constants that we use throughout     """
-""" 										  """
-
-plum = plumeClass.plumeEtAl(None, True, fileName )
-
-sc = None
-dummyMsg = positionSim_t()
-flow = flowField.flowField(plum.param.flow)
-r = 0.5
-norm = (5.0/plum.param.den)
-fileNumber = 1
-
-""" 										  """
 
 
 print "enviroSim is ready"

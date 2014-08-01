@@ -26,6 +26,20 @@ import matplotlib.pyplot as plt
 from numpy import *
 eps = sys.float_info.epsilon
 
+from constants import Dt, T_thresh, ts
+
+#setup robot object
+rob = robotClass.robot()
+T_thresh = T_thresh*(1/Dt)
+
+dummyMsg = positionSim_t()
+
+
+print "Time steps of: %s\nBegin robot at %s\nUntil %s"%(Dt, T_thresh, ts/Dt)
+
+
+
+
 
 
 def envHandler(channel, data):#handle messages recieved over channel envReturn - contains all of the (sense environment) data
@@ -39,22 +53,11 @@ def conHandler(channel, data):#handle messages from the control- conReturn - con
 	#print 'Robots have moved'
 
 
-#setup robot object
-rob = robotClass.robot()
-
 lcm = lcm.LCM()
 subEnv = lcm.subscribe("dataReturn", envHandler)
 subCon = lcm.subscribe("conReturn", conHandler) 
 
 
-Dt = 0.002
-T_thresh =3
-ts = 10
-T_thresh = T_thresh*(1/Dt)
-
-dummyMsg = positionSim_t()
-
-print "Time steps of: %s\nBegin robot at %s\nUntil %s"%(Dt, T_thresh, ts/Dt)
 
 
 
