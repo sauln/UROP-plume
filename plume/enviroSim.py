@@ -19,6 +19,30 @@ reload(flowField)
 plotTrue = True
 
 
+
+""" 
+	going to rearrange the control and estimation part so that
+	the gradient and divergence calculations are right in front,
+	and more apart of the control than apart of the environment
+
+"""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def saveplot(fileName, t, r, norm):
 	global fig
 	print "SAVING PLOT"
@@ -81,6 +105,10 @@ def retrieve(channel, data):
 
 	if T == -1:
 		os._exit(1)# break
+
+
+
+	"""now find data should only return the 5 cs and the flow vector """
 	c, DU_dx0, DU_dy0, vx, vy, D2U0 = findData(T, x, y)
 
 	dummyMsg.U0 = c
@@ -114,7 +142,13 @@ def findData(T, x, y):
 	#flow vector
 	vy, vx = flow.getVal(y,x)
 	#concentration
+
+	
 	c = plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r) 
+
+
+
+
 	c =  c * norm
 	
 	#gradient and divergence

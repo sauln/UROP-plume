@@ -33,18 +33,72 @@ plum = plumeClass.plumeEtAl(None, True, fileName )
 
 plotHex = False
 plotSpont = False
-plotPDE = True
+plotPDE = False
+testFilter = True
+
+
+if testFilter:
+	fNum = 7
+	dist = 21
+	#dist = 21
+	plum.loadData(fileName, fNum)
+	r = 0.02
+	sparse = 1
+	num = 20 / (2*r)
+	steps = np.linspace(0, 20, num, endpoint = True)
+	cL = []
+
+	#ten lists that we will get at different times throughout
+	#the simulation
+	#then average them all together and see how smooth they are...
+
+	print "setting it up"
+	for i in xrange(10):
+		cL.append(list())
+	xes = range(100, 300, 20)
+	for l, sex in zip(cL, xes):
+		print "next level"
+		for s in steps:
+			c = plum.plumeHist[sex].concentration(s, dist, r, sparse) 
+			l.append(c)
+		lb = '%s' %sex
+		plt.plot(l, label = lb)
+
+
+	z = []
+
+	print "almost finished"
+	for a,b,c,d,e,f,g,h,i,j in zip(cL[0], cL[1], cL[2], cL[3], cL[4],  \
+		cL[5], cL[6], cL[7], cL[8], cL[9]):
+		z.append((a+b+c+d+e+f+g+h+i+j)/10)
+
+
+	plt.plot(cL[0], label = '0')
+	plt.plot(cL[4], label = '4')
+	plt.plot(cL[8], label = '8')
+
+	plt.plot(z, label = "average")
+	
+
+	plt.legend()
+	savefig('../plots/distrobution/%sand%sand%s.png'%(fNum, dist, size(steps)))
+
+	show()
+
 
 
 if plotPDE:
 	fNum = 8
 	dist = [22, 19, 16]
+	#dist = 21
 	plum.loadData(fileName, fNum)
-	r = 0.05
+	r = 0.02
 	sparse = 1
 	num = 20 / (2*r)
 	steps = np.linspace(0, 20, num, endpoint = True)
 	cL = []
+
+
 	cL.append(list())
 	cL.append(list())
 	cL.append(list())
