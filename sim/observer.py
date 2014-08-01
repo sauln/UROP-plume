@@ -112,8 +112,8 @@ def conHandler(channel, data):
 				
 
 			
-	Xhat 			= Xhat + (Dt * mysaturation(Xhatdot, Xhatdot_max)).H
-	X0   			= X0   + (Dt * mysaturation(V0_robot, V0_robot_max)).H 
+	Xhat 			= Xhat + (Dt * Xhatdot)#mysaturation(Xhatdot, Xhatdot_max)).H
+	X0   			= X0   + (Dt * V0_robot)#mysaturation(V0_robot, V0_robot_max)).H 
 	Xhat_diff=(Dt * mysaturation(Xhatdot, Xhatdot_max)).H
 	X0_diff= (Dt * mysaturation(V0_robot, V0_robot_max)).H
 

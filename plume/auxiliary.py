@@ -35,7 +35,7 @@ class Parameters():
 		self.T = 12.0
 		self.dt = 0.002
 		self.den = 5000.0
-		self.flow = 'mit'#'simple'#'mit'# 'simple' #'mit'# or 'simple'
+		self.flow = 'simple'#'mit'
 		self.std = 1.0
 		self.adjust = 3.0/self.den
 		self.xi = 10.0

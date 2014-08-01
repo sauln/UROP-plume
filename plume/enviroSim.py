@@ -44,31 +44,18 @@ sc = None
 dummyMsg = positionSim_t()
 flow = flowField.flowField(plum.param.flow)
 #r = 0.5
-norm = (25.0/plum.param.den)
+norm = (45.0/plum.param.den)
 fileNumber = 1
 
 """ 										  """
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 def saveplot(fileName, t, r, norm):
 	global fig
-	print "SAVING PLOT"
 
 	f = "../simPlots/%s_%s_%s_%s.png" %(fileName, t, r, norm)
+	print "SAVING PLOT as %s"%f
 	savefig(f, bbox_inches='tight')
 
 

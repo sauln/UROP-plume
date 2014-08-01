@@ -26,15 +26,19 @@ we will start at time 4 and go to tme 8
 """
 
 
-fileName = "symetric/dense"
+fileName = "symetric/sparse"
 print "load plume data from file %s"% fileName
 plum = plumeClass.plumeEtAl(None, True, fileName )
 
 
+#fig1 = plt.figure(1)
+#plt.scatter(plum.plumeHist[-1].ys, plum.plumeHist[-1].xs)
+#show()
+
 plotHex = False
-plotSpont = False
+plotSpont = True
 plotPDE = False
-testFilter = True
+testFilter = False
 
 
 if testFilter:
@@ -118,13 +122,13 @@ if plotPDE:
 
 if plotSpont:
 	start = int(4/0.002)
-	end   = int(5/0.002)
-	step = 10
+	end   = int(6/0.002)
+	step = 5
 	fileNumber = 1
 	
 	""" We need to figure out an equation to relate these"""
-	r = 0.015
-	norm = (5.0/plum.param.den)
+	r = 0.02
+	norm = (25.0/plum.param.den)
 	sparse = 1
 
 	cL = []
@@ -155,8 +159,9 @@ if plotSpont:
 		#print c
 		cL.append(c)
 
-
-
+	fig2 = plt.figure(2)
+	plt.scatter(plum.plumeHist[-1].ys, plum.plumeHist[-1].xs)
+	show()
 	mean = np.mean(cL)
 
 	plt.plot(cL)

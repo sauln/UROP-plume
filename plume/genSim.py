@@ -29,7 +29,10 @@ def main(argv):
 
 
 	param = auxiliary.Parameters()
-	plum = plumeClass.plume(param,  argv[1], False)
+
+	fileName = "%s_%s"%(argv[1], param.den)
+
+	plum = plumeClass.plume(param,  fileName, False)
 
 
 	#fileName = "npSaveExperiment.bin"
