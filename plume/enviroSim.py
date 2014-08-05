@@ -16,7 +16,8 @@ import plumeClass
 reload(plumeClass)
 import flowField
 reload(flowField)
-plotTrue = True
+plotTrue = False
+movieTrue = True
 
 from constants import r
 
@@ -64,6 +65,28 @@ import numpy as np
 
 
 
+class movieData():
+	def __init__(self):
+		self.heat = []
+		
+		self.ext = []
+		self.xx = []
+		self.yy = []
+		self.T = []
+		self.c = []
+
+	def add(self, Hmasked, extent, rx, ry, T,c):
+		self.heat.append(Hmasked)
+		self.ext.append(extent)
+		self.xx.append(rx)
+		self.yy.append(ry)
+		self.T.append(T)
+		self.c.append(c)
+
+
+
+movDat = movieData()
+
 def saveplot(fileName, t, r, norm):
 	global fig
 
@@ -72,8 +95,115 @@ def saveplot(fileName, t, r, norm):
 	savefig(f, bbox_inches='tight')
 
 
-def updatePlot(T, rx, ry,c ):#, div, dx, dy):
-	global fig, sc
+
+
+
+"""
+
+if plotTrue:
+	print "initiate plot"
+	plt.close("all")
+	fig = plt.figure(figsize=(11,6))
+	plt.clf()
+	#show()
+
+	#fig.ax = fig.add_subplot(131, aspect='equal')
+	#fig.ax2 = fig.add_subplot(132)
+	#fig.ax3 = fig.add_subplot(133)
+	fig.ax  = plt.subplot2grid((2,3), (0,0), rowspan= 2)
+	fig.ax2 = plt.subplot2grid((2,3), (0,1))
+	fig.ax3 = plt.subplot2grid((2,3), (1,1))
+	fig.ax4 = plt.subplot2grid((2,3), (0,2))
+	fig.ax5 = plt.subplot2grid((2,3), (1,2), projection='3d') 
+
+
+	fig.ax2.set_title('Concentration')
+	fig.ax3.set_title('Location')
+	fig.ax4.set_title('Divergence')
+	fig.ax5.set_title('Gradient')
+
+
+	fig.ax.axis([0,20,0,30])
+	plt.subplots_adjust(left=0.05, right=0.95, top=0.9, bottom=0.05)
+
+
+
+
+
+"""
+
+
+def genMovie(channel, data):
+	print "save a shitload of frames and generate a movie from them"
+
+
+	files = []
+	fig = plt.figure()
+	plt.clf()
+
+	plt.title('Simplest default with labels')
+	fig.ax  = plt.subplot2grid((2,2), (0,0), rowspan= 2)
+	fig.ax.axis([0,20,0,30])
+	fig.ax1  = plt.subplot2grid((2,2), (0,1))
+
+	
+	print shape(movDat.T)[0]
+
+
+	for T, heat, ext, x, y, c, i  in \
+		zip(movDat.T, movDat.heat, movDat.ext, movDat.xx, movDat.yy, movDat.c, xrange(shape(movDat.T)[0]) ):
+		im = fig.ax.imshow(heat, extent = ext)#, vmin=0, vmax=200)
+		fig.ax.scatter(x, y, s = 50,c = 'g', marker='o', zorder = 1)#robot
+		fig.ax.set_title("Simulation of '%s'\nT=%s" \
+			%( fileName, ( T*plum.param.dt)) )
+		fig.ax1.scatter(T, c)
+		fig.ax1.set_title("con: %s"%c)
+		cax = fig.add_axes([0.9, 0.1, 0.03, 0.8])
+		fig.colorbar(im, cax)#im, cax=cax)
+
+
+		fname = 'frames/_tmp%03d.png'%i
+		print 'saving frame', fname
+		fig.savefig(fname)
+		files.append(fname)
+	print "making movie animation.mpg - this may take a while"
+	os.system("mencoder 'mf://frames/_tmp*.png' -mf type=png:fps=10 -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o animation2.mpg")
+
+
+
+
+def makeMovie(channel, data):
+
+
+	print "received makeMove finsih message"
+
+	global movDat
+	plt.close("all")
+	fig = plt.figure()
+	plt.clf()
+	show()
+	
+	plt.title('Simplest default with labels')
+	fig.ax  = plt.subplot2grid((2,2), (0,0), rowspan= 2)
+	fig.ax.axis([0,20,0,30])
+
+	fig.ax1  = plt.subplot2grid((2,2), (0,1))
+
+	for T, heat, ext, x, y, c in zip(movDat.T, movDat.heat, movDat.ext, movDat.xx, movDat.yy, movDat.c):
+		im = fig.ax.imshow(heat, extent = ext)#, vmin=0, vmax=200)
+		fig.ax.scatter(x, y, s = 50,c = 'g', marker='o', zorder = 1)#robot
+		fig.ax.set_title("Simulation of '%s'\nT=%s" \
+			%( fileName, ( T*plum.param.dt)) )
+		fig.ax1.scatter(T, c)
+		fig.ax1.set_title("con: %s"%c)
+		cax = fig.add_axes([0.9, 0.1, 0.03, 0.8])
+		fig.colorbar(im, cax)#im, cax=cax)
+		plt.draw()
+
+	print "finished movie. how do I save it off now?"
+
+def saveMovie(T, rx, ry,c ):#, div, dx, dy):
+	global fig, sc, movDat
 
 	"""this replots everything each time.  I shouldn't have to do that."""
 	#plt.clf()
@@ -81,7 +211,7 @@ def updatePlot(T, rx, ry,c ):#, div, dx, dy):
 	if sc !=None:
 		sc.remove()
 	
-	if T%100 == 0:
+	if T%5 == 0:
 		heatmap, xedges, yedges = np.histogram2d(plum.plumeHist[int(ceil(T%500))].\
 			ys[::], plum.plumeHist[int(ceil(T%500))].xs[::], bins=50)
 
@@ -89,7 +219,38 @@ def updatePlot(T, rx, ry,c ):#, div, dx, dy):
 		heatmap = np.flipud(heatmap)
 		Hmasked = np.ma.masked_where(heatmap==0,heatmap) # Mask pixels with a value of zero
 		extent = [xedges[0], xedges[-1], yedges[-1], yedges[0]]
+		#fig.ax.imshow(Hmasked, extent = extent, vmin=0, vmax=200)
+
+		
+		movDat.add(Hmasked, extent, rx, ry,T, c)
+
+			#add(Hmasked, extent, rx, ry, T,c):
+
+
+
+def updatePlot(T, rx, ry,c ):#, div, dx, dy):
+	global fig, sc, movDat
+
+	"""this replots everything each time.  I shouldn't have to do that."""
+	#plt.clf()
+	
+	if sc !=None:
+		sc.remove()
+	
+	if T%10 == 0:
+		heatmap, xedges, yedges = np.histogram2d(plum.plumeHist[int(ceil(T%500))].\
+			ys[::], plum.plumeHist[int(ceil(T%500))].xs[::], bins=50)
+
+		heatmap = np.rot90(heatmap)
+		heatmap = np.flipud(heatmap)
+		Hmasked = np.ma.masked_where(heatmap==0,heatmap) 
+		extent = [xedges[0], xedges[-1], yedges[-1], yedges[0]]
 		fig.ax.imshow(Hmasked, extent = extent, vmin=0, vmax=200)
+
+
+	movDat.add(Hmasked, extent, rx, ry,T, c)
+
+
 
 
 
@@ -104,17 +265,24 @@ def updatePlot(T, rx, ry,c ):#, div, dx, dy):
 	fig.ax2.scatter(T, c)
 	fig.ax2.set_title("C: %s" %c)
 	fig.ax3.scatter(rx, ry)
-	#fig.ax4.scatter(T, dx)
+	fig.ax4.scatter(T, dx)
 	#fig.ax5.scatter(T, dy)
 	#fig.ax4.scatter(T, div)
 	#fig.ax5.scatter(T, dx,dy)
 	
-	#plt.draw()
+	plt.draw()
 
 def confirmUpdate():
 	#this is not needed anymore
 	global dummyMsg
 	lc.publish("envUpdateConfirm", dummyMsg.encode() )
+
+
+
+
+
+
+
 
 def retrieve(channel, data):
 	global plum
@@ -124,8 +292,8 @@ def retrieve(channel, data):
 	x = msg.X0[0];  y = msg.X0[1]
 	T = msg.T
 
-	if T == -1:
-		os._exit(1)# break
+	#if T == -1:
+	#	os._exit(1)# break
 
 
 
@@ -190,6 +358,10 @@ def findData(T, x, y):
 	#print "DU_dx0: %s DU_dy0: %s\nD2U0: %s U0: %s" \
 	#	%(DU_dx0, DU_dy0, D2U0, c)
 
+	if movieTrue:
+		saveMovie(T, x,y,c[0])
+
+
 	if plotTrue:
 		updatePlot(T, x,y,c[0]) #, D2U0, DU_dx0, DU_dy0)
 	#update(x,y)
@@ -203,7 +375,8 @@ print "initiate lcm"
 lc = lcm.LCM()
 
 subs1 = lc.subscribe("envRetrieve", retrieve) 
-
+subs2 = lc.subscribe("finishSim", genMovie)
+#lcm.publish( "finishSim", msg.encode() )
 
 if plotTrue:
 	print "initiate plot"

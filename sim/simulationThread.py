@@ -30,7 +30,7 @@ from constants import Dt, T_thresh, ts
 
 #setup robot object
 rob = robotClass.robot()
-T_thresh = 4
+T_thresh = 3
 T_thresh = T_thresh*(1/Dt)
 
 dummyMsg = positionSim_t()
@@ -60,7 +60,7 @@ subCon = lcm.subscribe("conReturn", conHandler)
 
 
 
-
+print int(ts/Dt)
 
 for T in xrange(int(ts/Dt)):
 
@@ -83,14 +83,16 @@ for T in xrange(int(ts/Dt)):
 
 
 msg 		= finishSim_t()
-msg.length  = len(rob.dataStore.xRobotx)
-msg.T       = rob.dataStore.T
-msg.xRobotx = rob.dataStore.xRobotx
-msg.xRoboty = rob.dataStore.xRoboty
+#msg.length  = len(rob.dataStore.xRobotx)
+#msg.T       = rob.dataStore.T
+#msg.xRobotx = rob.dataStore.xRobotx
+#msg.xRoboty = rob.dataStore.xRoboty
 
 
 dummyMsg.T = -1
 lcm.publish( "envRetrieve", dummyMsg.encode())
+
+print "publish finish up messagE"
 lcm.publish( "finishSim", msg.encode() )
 
 time.sleep(1)
