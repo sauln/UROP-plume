@@ -35,11 +35,21 @@ class Parameters():
 		self.T = 12.0
 		self.dt = 0.002
 		self.den = 5000.0
-		self.flow = 'simple'#'mit'
+		self.flow = 'mit'# 'simple'#'mit'
 		self.std = 1.0
 		self.adjust = 3.0/self.den
-		self.xi = 10.0
+
+
+		if self.flow == 'mit':
+			self.xi = 13.0
+		else:		
+			self.xi = 10.0
 		self.yi = 26.0
+		
+		self.dispersion = 0.2 #dispersion coefficient
+
+		self.dispersion = float(self.dispersion)
+
 
 		self.steps = int( ceil( self.T/self.dt ) )
 		ticks = 1/self.dt

@@ -30,6 +30,7 @@ from constants import Dt, T_thresh, ts
 
 #setup robot object
 rob = robotClass.robot()
+T_thresh = 4
 T_thresh = T_thresh*(1/Dt)
 
 dummyMsg = positionSim_t()

@@ -100,7 +100,7 @@ def main():
 
 def exampleSim():
 	param = auxiliary.Parameters()
-	plum = plumeClass.plume(param, "testNegheeby", False)
+	plum = plumeClass.plume(param, "none", False)
 
 	for x in xrange(int(param.T/param.dt)):
 	#for x in linspace(0, param.T, param.steps, endpoint=True):

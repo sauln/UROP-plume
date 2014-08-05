@@ -318,6 +318,7 @@ class plume():
 		#self.kinzelbach1990SoA()
 		#self.doKinzelbach1990()
 		self.NegheebyStep()
+		#self.NegheebyWOran()
 		#self.doSameKinzelbach()
 
 
@@ -343,12 +344,27 @@ class plume():
 		vx, vy = self.flow.getVectorSoA(self.puffSoA.xs, self.puffSoA.ys)
 		vx = np.asarray(vx)
 		vy = np.asarray(vy)
-		self.puffSoA.xs, self.puffSoA.ys = step.Negheeby2010( \
+
+		xss, yss= step.Negheeby2010( \
+			np.asarray(self.puffSoA.xs), \
+			np.asarray(self.puffSoA.ys),#, \
+			vx, vy, \
+			self.param.dispersion )
+
+
+		self.puffSoA.xs = xss.tolist()
+		self.puffSoA.ys = yss.tolist()
+
+
+	def NegheebyWOran(self):
+		vx, vy = self.flow.getVectorSoA(self.puffSoA.xs, self.puffSoA.ys)
+		vx = np.asarray(vx)
+		vy = np.asarray(vy)
+		self.puffSoA.xs, self.puffSoA.ys = step.NegheebyWOran( \
 			np.asarray(self.puffSoA.xs), \
 			np.asarray(self.puffSoA.ys), vx, vy  )
 		self.puffSoA.xs = self.puffSoA.xs.tolist()
 		self.puffSoA.ys = self.puffSoA.ys.tolist()
-
 
 	def plotPlume(self):
 		flow = self.flow

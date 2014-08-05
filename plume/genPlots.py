@@ -6,7 +6,10 @@ reload(plumeClass)
 
 from pylab import *
 import matplotlib.pyplot as plt
+from scipy.stats.kde import gaussian_kde
 
+
+import scipy
 
 """
 #here we want to plot some intermittency graphs that look good
@@ -26,7 +29,7 @@ we will start at time 4 and go to tme 8
 """
 
 
-fileName = "symetric/sparse"
+fileName = "lowDisp/mit_Dp1_5000"  #"symetric/sparse_5000.0"
 print "load plume data from file %s"% fileName
 plum = plumeClass.plumeEtAl(None, True, fileName )
 
@@ -35,9 +38,9 @@ plum = plumeClass.plumeEtAl(None, True, fileName )
 #plt.scatter(plum.plumeHist[-1].ys, plum.plumeHist[-1].xs)
 #show()
 
-plotHex = False
-plotSpont = True
-plotPDE = False
+plotHex = True
+plotSpont = False
+plotPDF = False
 testFilter = False
 
 
@@ -91,29 +94,51 @@ if testFilter:
 
 
 
-if plotPDE:
+if plotPDF:
 	fNum = 8
 	dist = [22, 19, 16]
 	#dist = 21
 	plum.loadData(fileName, fNum)
-	r = 0.02
+	r = 0.2
 	sparse = 1
 	num = 20 / (2*r)
 	steps = np.linspace(0, 20, num, endpoint = True)
 	cL = []
+	
+	''' setup '''
+	#cL.append(list())
+
+	''' gathering the concentrations'''
+	
+	for s in steps:
+		c = plum.plumeHist[-1].concentration(s, 22, r, sparse) 
+		cL.append(c)
+		
+		#plt.plot(l)
+	
+
+	print "mean %s" % scipy.stats.mstats.tmean(cL)
+	print "variance %s" %scipy.stats.mstats.variation(cL)
 
 
-	cL.append(list())
-	cL.append(list())
-	cL.append(list())
+	smoothness = 100
+	kde = []; distSpace = []; p = []; txt = []
+		
+	print cL
 
-	for d, l in zip(dist, cL):
-		for s in steps:
-			c = plum.plumeHist[-1].concentration(s, d, r, sparse) 
-			l.append(c)
-		lb = '%s' %d
-		plt.plot(l, label = lb)
-	plt.legend()
+	y =  scipy.stats.multivariate_normal.pdf(steps, scipy.stats.mstats.tmean(cL), scipy.stats.mstats.variation(cL))
+
+	plt.plot(y)
+
+	kd = gaussian_kde(cL)
+	dS = linspace( min(cL), max(cL), smoothness)
+	#pl = plt.plot(dS, kd(dS), label = "3 units from source" )
+
+	#pl = plt.plot(cL)
+
+	print kd(dS)
+
+	#		plt.legend()
 	savefig('../plots/distrobution/%sand%sand%s.png'%(fNum, dist, size(steps)))
 
 	show()
@@ -182,8 +207,8 @@ if plotSpont:
 
 if plotHex:
 
-	start = 7
-	end = 8
+	start = 6
+	end = 7
 	h = []
 	xe = []
 	ye = []
@@ -191,7 +216,7 @@ if plotHex:
 		print t
 		plum.loadData(fileName, int(t)+1)
 		heatmap, xedges, yedges = np.histogram2d(plum.plumeHist[-1].\
-				ys[::], plum.plumeHist[-1].xs[::], bins=50)
+				ys[::], plum.plumeHist[-1].xs[::], bins=200)
 
 		heatmap = np.rot90(heatmap)
 		heatmap = np.flipud(heatmap)
@@ -212,12 +237,19 @@ if plotHex:
 	plt.title("Heatmap of plume from simulation %s" %fileName)
 
 	data = h
+	print type(data)#(data[-1].all())
+	print type(max(data))
+	print shape(data)
+	print shape(data[0])
+	print type(data[0])
+	print data[0]
 	#for dat, ax, x,y, t in zip(data, axes.flat, xe, ye, range(start,end) ):
 	for dat,  x,y, t in zip(data,  xe, ye, range(start,end) ):
 		# The vmin and vmax arguments specify the color limits
 		extent = [x[0], x[-1], y[-1], y[0]]
 		#im = axes.imshow(dat, extent = extent, vmin=0, vmax=200)
-		im = axes.imshow(dat, extent = extent, vmin = 0, vmax = 5000)
+		
+		im = axes.imshow(dat, extent = extent)#, vmin = 0, vmax = 200)
 		#plt.pcolormesh(x,y,dat)
 		axes.axis([0,20,0,30])
 		#redraw()

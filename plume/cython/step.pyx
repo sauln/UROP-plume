@@ -135,15 +135,25 @@ def kinzelbach1990(np.ndarray[DTYPE_t, ndim=1] x, np.ndarray[DTYPE_t, ndim=1] y,
 
 
 @cython.boundscheck(False)
-def Negheeby2010(np.ndarray[DTYPE_t, ndim=1] x, np.ndarray[DTYPE_t, ndim=1] y, np.ndarray[DTYPE_t, ndim=1] vx, np.ndarray[DTYPE_t, ndim=1] vy):
-	#for some reason x and y got switched - 
+def Negheeby2010(		np.ndarray[DTYPE_t, ndim=1] x,
+						np.ndarray[DTYPE_t, ndim=1] y,  	
+						np.ndarray[DTYPE_t, ndim=1] vx, 
+						np.ndarray[DTYPE_t, ndim=1] vy,
+						float dispIn):
+		#for some reason x and y got switched - 
 	''' 
 		Equation described in Kinzelback1990
 		adapted to incorporate a structure of arrays instead 
 		of an array of structures
 	'''
 
-	cdef float D = 0.1 #diffusion coefficient
+	#cdef float D = 0.01 #diffusion coefficient
+	#cdef np.ndarray x = np.zeros([10, 1], dtype=DTYPE)
+	#cdef np.ndarray y = np.zeros([10, 1], dtype=DTYPE)
+	#cdef np.ndarray vx = np.zeros([10, 1], dtype=DTYPE)
+	#cdef np.ndarray vy = np.zeros([10, 1], dtype=DTYPE)
+
+	cdef float D = dispIn
 	cdef float dt = 0.002
 	cdef float each, alf, v, i, ad, di, R, T
 	cdef np.ndarray h = np.zeros([x.shape[0], 1], dtype=DTYPE)
@@ -191,11 +201,11 @@ def Negheeby2010(np.ndarray[DTYPE_t, ndim=1] x, np.ndarray[DTYPE_t, ndim=1] y, n
 
 	""" New diffusion bit """
 	cdef np.ndarray[DTYPE_t, ndim=1] difX = np.asarray(\
-		[(R * ( (12 * D * dt) ** .5  ) ) * np.sin(2 * np.pi * T) \
+		[(R * ( (12 * D * dt) ** .5  ) ) * np.cos(2 * np.pi * T) \
 		for R, T in zip(alphaX, thetaX)])
 
 	cdef np.ndarray[DTYPE_t, ndim=1] difY = np.asarray(\
-		[(R * ( (12 * D * dt) ** .5  ) ) * np.cos(2 * np.pi *T) \
+		[(R * ( (12 * D * dt) ** .5  ) ) * np.sin(2 * np.pi *T) \
 		for R, T in zip(alphaY, thetaY)])
 
 
@@ -259,6 +269,112 @@ def Negheeby2010(np.ndarray[DTYPE_t, ndim=1] x, np.ndarray[DTYPE_t, ndim=1] y, n
 	return finX, finY
 
 
+""" ########################################################### """
+
+@cython.boundscheck(False)
+def NegheebyWOran(np.ndarray[DTYPE_t, ndim=1] x, np.ndarray[DTYPE_t, ndim=1] y, np.ndarray[DTYPE_t, ndim=1] vx, np.ndarray[DTYPE_t, ndim=1] vy, float D):
+	#for some reason x and y got switched - 
+	''' 
+		Equation described in Kinzelback1990
+		adapted to incorporate a structure of arrays instead 
+		of an array of structures
+	'''
+
+	#cdef float D = 0.1 #diffusion coefficient
+	cdef float dt = 0.02
+	cdef float each, alf, v, i, ad, di, R, T
+
+
+	if (x.shape[0] != y.shape[0]):
+		raise ValueError("arrays not the same size")
+
+
+	cdef np.ndarray h = np.zeros([x.shape[0], 1], dtype=DTYPE)
+
+
+
+
+
+
+
+	""" velocity vector """ 
+	cdef np.ndarray[DTYPE_t, ndim=1] vxFix = np.asarray([(each == 0)*1.0 + (each != 0)*each for each in vx])
+	cdef np.ndarray[DTYPE_t, ndim=1] vyFix = np.asarray([(each == 0)*1.0 + (each != 0)*each for each in vy])
+
+
+	""" Advection component"""
+	cdef np.ndarray[DTYPE_t, ndim=1] advX = np.asarray([dt*each for each in vx])
+	cdef np.ndarray[DTYPE_t, ndim=1] advY = np.asarray([dt*each for each in vy])
+
+
+	cdef float difX = (12*D*dt)**0.5 #* np.cos(2*np.pi)
+	cdef float difY = (12*D*dt)**0.5 #* np.sin(2*np.pi)
+
+	difX = 0
+	difY = 0
+
+	#print advX[-1], difX[-1]
+
+	cdef np.ndarray[DTYPE_t, ndim=1] xs = np.asarray([i + ad + difX 	for i, ad in zip(x, advX)])
+	cdef np.ndarray[DTYPE_t, ndim=1] ys = np.asarray([i + ad + difY 	for i, ad in zip(y, advY)])
+	
+	
+
+	newArr = np.where(xs >= 30)[0]
+	if newArr.any():
+		print "delete"
+		xs = np.delete(xs, newArr)
+		ys = np.delete(ys, newArr)
+
+		newArr = np.where(xs >= 30)[0]
+		if newArr.any():
+			print "did not delete correctly"
+			print xs[newArr], ys[newArr]
+
+	newArr = np.where(xs <= 0)[0]
+	if newArr.any():
+		print "delete"
+		xs = np.delete(xs, newArr)
+		ys = np.delete(ys, newArr)
+
+		newArr = np.where(xs <= 0)[0]
+		if newArr.any():
+			print "did not delete correctly"
+			print xs[newArr], ys[newArr]
+
+	newArr = np.where(ys >= 20)[0]
+	if newArr.any():
+		print "delete"
+		xs = np.delete(xs, newArr)
+		ys = np.delete(ys, newArr)
+
+		newArr = np.where(ys >= 20)[0]
+		if newArr.any():
+			print "did not delete correctly"
+			print xs[newArr], ys[newArr]
+		
+
+	newArr = np.where(ys <= 0)[0]
+	if newArr.any():
+		print "delete"
+		xs = np.delete(xs, newArr)
+		ys = np.delete(ys, newArr)
+
+		newArr = np.where(ys <= 0)[0]
+		if newArr.any():
+			print "did not delete correctly"
+			print xs[newArr], ys[newArr]
+
+
+
+	cdef np.ndarray[DTYPE_t, ndim=1] finX = np.asarray(xs)
+	cdef np.ndarray[DTYPE_t, ndim=1] finY = np.asarray(ys)
+
+	return finX, finY
+
+
+
+	
 
 	
 

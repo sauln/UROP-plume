@@ -10,9 +10,10 @@ import scipy.linalg as LA
 import time
 import matplotlib.pyplot as plt
 
-
-
 from constants import *
+
+
+
 
 
 dumMsg = positionSim_t()

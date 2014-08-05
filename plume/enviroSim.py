@@ -28,10 +28,10 @@ from constants import r
 """
 
 
-print sys.argv[1]
+#print sys.argv[1]
 
-fileName = sys.argv[1]
-
+#fileName = sys.argv[1]
+fileName = 'mit/sparse_5000.0'
 print "load plume data from file %s"% fileName
 
 """ 										  """
@@ -51,10 +51,23 @@ fileNumber = 1
 
 
 
+
+"""Create an animation """
+
+
+
+
+
+
+from pyqtgraph.Qt import QtGui, QtCore
+import numpy as np
+
+
+
 def saveplot(fileName, t, r, norm):
 	global fig
 
-	f = "../simPlots/%s_%s_%s_%s.png" %(fileName, t, r, norm)
+	f = "../plots/simPlots/%s_%s_%s_%s.png" %(fileName, t, r, norm)
 	print "SAVING PLOT as %s"%f
 	savefig(f, bbox_inches='tight')
 
@@ -83,7 +96,7 @@ def updatePlot(T, rx, ry,c ):#, div, dx, dy):
 
 	#sc = fig.ax.scatter(plum.plumeHist[int(T%(1/plum.param.dt))].\
 	#	ys[::150],plum.plumeHist[int(T%(1/plum.param.dt))].xs[::150])
-	fig.ax.scatter(12, 26, s = 100,c = 'r', marker='o', zorder = 1)#source
+	fig.ax.scatter(plum.param.xi, plum.param.yi, s = 100,c = 'r', marker='o', zorder = 1)#source
 	fig.ax.scatter(rx, ry, s = 50,c = 'g', marker='o', zorder = 1)#robot
 	fig.ax.set_title("Simulation of '%s'\nT=%s"%( fileName, ( T*plum.param.dt)) )
 
@@ -96,7 +109,7 @@ def updatePlot(T, rx, ry,c ):#, div, dx, dy):
 	#fig.ax4.scatter(T, div)
 	#fig.ax5.scatter(T, dx,dy)
 	
-	plt.draw()
+	#plt.draw()
 
 def confirmUpdate():
 	#this is not needed anymore
@@ -179,7 +192,7 @@ def findData(T, x, y):
 
 	if plotTrue:
 		updatePlot(T, x,y,c[0]) #, D2U0, DU_dx0, DU_dy0)
-
+	#update(x,y)
 
 	return c, vx, vy 
 	#return c, DU_dx0, DU_dy0, vx, vy, D2U0
@@ -197,7 +210,7 @@ if plotTrue:
 	plt.close("all")
 	fig = plt.figure(figsize=(11,6))
 	plt.clf()
-	show()
+	#show()
 
 	#fig.ax = fig.add_subplot(131, aspect='equal')
 	#fig.ax2 = fig.add_subplot(132)

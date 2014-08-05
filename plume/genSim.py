@@ -30,7 +30,7 @@ def main(argv):
 
 	param = auxiliary.Parameters()
 
-	fileName = "%s_%s"%(argv[1], param.den)
+	fileName = "%s_%s"%(argv[1], int(param.den))
 
 	plum = plumeClass.plume(param,  fileName, False)
 
