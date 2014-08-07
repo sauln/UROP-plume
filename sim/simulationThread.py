@@ -59,7 +59,7 @@ subEnv = lcm.subscribe("dataReturn", envHandler)
 subCon = lcm.subscribe("conReturn", conHandler) 
 
 
-ts = 7
+
 print int(ts/Dt)
 
 for T in xrange(int(ts/Dt)):

@@ -15,7 +15,7 @@ import scipy
 
 
 
-fileName = 'mit/sparse_5000.0' #"lowDisp/mit_Dp1_5000"  #"symetric/sparse_5000.0"
+fileName = 'wave/cyclic1_5000' #"lowDisp/mit_Dp1_5000"  #"symetric/sparse_5000.0"
 print "load plume data from file %s"% fileName
 plum = plumeClass.plumeEtAl(None, True, fileName )
 
@@ -24,11 +24,11 @@ plum = plumeClass.plumeEtAl(None, True, fileName )
 #plt.scatter(plum.plumeHist[-1].ys, plum.plumeHist[-1].xs)
 #show()
 
-plotHex = False
+plotHex = True
 plotSpont = False
 plotPDF = False
 testFilter = False
-plotFlows = True
+plotFlows = False
 
 
 """
@@ -246,12 +246,12 @@ if plotSpont:
 
 if plotHex:
 
-	start = 10
-	end = 11
+	start = 2
+	end = 8
 	h = []
 	xe = []
 	ye = []
-	sparse = 5
+	sparse = 1
 	for t in range(start,end):
 		print t
 		plum.loadData(fileName, int(t)+1)
@@ -272,28 +272,25 @@ if plotHex:
 	total = end - start
 	if total == 1:
 		si = 1
+	else:
+		si = 3
 	
-	fig, axes = plt.subplots(nrows=si, ncols = si)
+	fig, axes = plt.subplots(nrows=3, ncols = 2)
 	plt.title("Heatmap of plume from simulation %s" %fileName)
 
 	data = h
-	print type(data)#(data[-1].all())
-	print type(max(data))
-	print shape(data)
-	print shape(data[0])
-	print type(data[0])
-	print data[0]
+
 	#for dat, ax, x,y, t in zip(data, axes.flat, xe, ye, range(start,end) ):
-	for dat,  x,y, t in zip(data,  xe, ye, range(start,end) ):
+	for dat,  x,y, t, ax in zip(data,  xe, ye, range(start,end), axes.flat ):
 		# The vmin and vmax arguments specify the color limits
 		extent = [x[0], x[-1], y[-1], y[0]]
 		#im = axes.imshow(dat, extent = extent, vmin=0, vmax=200)
 		
-		im = axes.imshow(dat, extent = extent)#, vmin = 0, vmax = 200)
+		im = ax.imshow(dat, extent = extent)#, vmin = 0, vmax = 200)
 		#plt.pcolormesh(x,y,dat)
-		axes.axis([0,20,0,30])
+		ax.axis([0,20,0,30])
 		#redraw()
-		axes.set_title('time %s'%(t+1))
+		ax.set_title('time %s'%(t+1))
 
 	cax = fig.add_axes([0.9, 0.1, 0.03, 0.8])
 	fig.colorbar(im, cax=cax)

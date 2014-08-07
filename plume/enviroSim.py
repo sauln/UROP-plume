@@ -50,7 +50,7 @@ fileNumber = 1
 
 
 print "r = %s"%r
-r = 0.1
+r = 0.5
 
 
 n1 = (-37.3 * r + 20.54)/r
@@ -186,6 +186,8 @@ def genMovie(channel = 1, data = 0):
 	fig.ax  = plt.subplot2grid((2,2), (0,0), rowspan= 2)
 	fig.ax.axis([0,20,0,30])
 	fig.ax1  = plt.subplot2grid((2,2), (0,1))
+	fig.ax2  = plt.subplot2grid((2,2), (1,1))
+
 
 	
 	print shape(movDat.T)[0]
@@ -199,7 +201,9 @@ def genMovie(channel = 1, data = 0):
 			%( fileName, ( T*plum.param.dt)) )
 		fig.ax1.scatter(T, c)
 		fig.ax1.set_title("con: %s"%c)
-		cax = fig.add_axes([0.9, 0.1, 0.03, 0.8])
+		fig.ax2.scatter(x,y)
+
+		cax = fig.add_axes([0.05, 0.1, 0.03, 0.8])
 		fig.colorbar(im, cax)#im, cax=cax)
 
 
@@ -208,7 +212,7 @@ def genMovie(channel = 1, data = 0):
 		fig.savefig(fname)
 		files.append(fname)
 	print "making movie animation.mpg - this may take a while"
-	os.system("mencoder 'mf://frames/_tmp*.png' -mf type=png:fps=10 -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o animation4.mpg")
+	os.system("mencoder 'mf://frames/_tmp*.png' -mf type=png:fps=10 -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o animation%s.mpg"%r)
 
 
 
@@ -375,7 +379,7 @@ def findData(T, x, y):
 	c = []
 
 
-	print plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r)
+	print "concentration: %s"%plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r)
 	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r)  * norm)
 	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x+(2*r), y, r)  * norm)
 	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x-(2*r), y, r)  * norm)

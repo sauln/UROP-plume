@@ -49,7 +49,7 @@ xytheta = matrix([[float(x_sur[0])],[float(x_sur[1])],[theta]])
 n = 1
 t0 = 0;					#start time
 T_thresh = 2;			#time point to release robot
-ts = 14;				#end time
+ts = 10;				#end time
 dt = 0.001;             #Time step
 Dt = 0.002;				#visualization period
 T_leader 	= 6000;		#time to start leader control
@@ -69,6 +69,6 @@ c_r     		= 5; 	#robot gain to observed value
 U_s			= 3;        #Concentration of polutant at the source 
 threshold 	= 0.1*U_s;  #threshold of concentration detection
 
-c1 = free_speed
+c1 = -free_speed
 
 

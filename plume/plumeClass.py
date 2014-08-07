@@ -303,7 +303,23 @@ class plume():
 	def tickSoA(self, T):
 		#this racks up puff debt, when it reaches a whole puff, it makes it
 		#or, every time, it makes all the puffs
-		self.puffQueue += self.param.ratio
+
+
+		#adding in a cyclical component
+
+		wave = 2* pi* 2
+
+		print "At time %s"%T
+
+		add = self.param.den * (np.cos(wave * T*self.param.dt) + 1) *self.param.dt
+		print "Adding %s to the queue" %add
+
+
+
+
+		#self.puffQueue += self.param.ratio
+
+		self.puffQueue += add
 		if self.puffQueue >= 1:
 			self.puffSoA.addPuffs(self.param.yi, self.param.xi, \
 				int(floor(self.puffQueue)))
