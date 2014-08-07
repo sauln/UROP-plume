@@ -30,7 +30,7 @@ from constants import Dt, T_thresh, ts
 
 #setup robot object
 rob = robotClass.robot()
-T_thresh = 3
+T_thresh = 2
 T_thresh = T_thresh*(1/Dt)
 
 dummyMsg = positionSim_t()
@@ -59,7 +59,7 @@ subEnv = lcm.subscribe("dataReturn", envHandler)
 subCon = lcm.subscribe("conReturn", conHandler) 
 
 
-
+ts = 7
 print int(ts/Dt)
 
 for T in xrange(int(ts/Dt)):

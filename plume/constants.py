@@ -69,6 +69,6 @@ c_r     		= 5; 	#robot gain to observed value
 U_s			= 3;        #Concentration of polutant at the source 
 threshold 	= 0.1*U_s;  #threshold of concentration detection
 
-c1 = -free_speed
+c1 = free_speed
 
 

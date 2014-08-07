@@ -52,8 +52,10 @@ if(plotMe):
 
 
 
-def updatePoints(ptx, pty):
-	plt.clf()
+def updatePoints(plum):
+	#plt.clf()
+
+	ptx, pty = plum.getPointsSoA()
 	ax = fig.add_subplot(111, aspect='equal')
 	plt.axis([0,20,0,30])
 	#Q = plt.quiver( flow.x[:-2:dif,::dif], flow.y[:-2:dif,:-2:dif], \
@@ -67,10 +69,10 @@ def updatePoints(ptx, pty):
 	#axis('equal')
 	#colorbar()
 	s = plt.scatter(pty,ptx)
-	sc = scatter(12, 26, s = 100,c = 'r', marker='o', zorder = 1)
+	sc = scatter(plum.param.xi, plum.param.yi, s = 100,c = 'r', marker='o', zorder = 1)
 	#pltAniR.append(r)
 	#pltAniS.append(s)
-	plt.title('A very slow simulation that demonstrates that lcm works')
+	plt.title('Lagrangian walk of a single molecule')
 	plt.draw()
 
 
@@ -102,13 +104,19 @@ def exampleSim():
 	param = auxiliary.Parameters()
 	plum = plumeClass.plume(param, "none", False)
 
+
+	plum.puffSoA.addPuffs(plum.param.yi, plum.param.xi, 1)
 	for x in xrange(int(param.T/param.dt)):
 	#for x in linspace(0, param.T, param.steps, endpoint=True):
 		#print x
-		plum.tickSoA(x)
+		plum.movePuffs()
+
 		if plotMe:
-			xp, yp = plum.getPointsSoA()
-			updatePoints(xp, yp)
+			
+			updatePoints(plum)
+
+
+	print "finished"
 	return plum
 
 

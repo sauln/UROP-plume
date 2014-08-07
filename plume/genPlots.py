@@ -1,7 +1,8 @@
 import sys
 import plumeClass
 reload(plumeClass)
-
+import flowField
+reload(flowField)
 
 
 from pylab import *
@@ -11,25 +12,10 @@ from scipy.stats.kde import gaussian_kde
 
 import scipy
 
-"""
-#here we want to plot some intermittency graphs that look good
-#here we want to plot some instantaneous distribution and time-averaged distribution
-
-source is at 10, 26
-
-lets go 4 units down and 8 units down
-
-(10, 22) and (10, 18)
-
-here we are going to sample the plume every 5 time steps
-we will sample the concentration with varying radius
-
-we will start at time 4 and go to tme 8
-
-"""
 
 
-fileName = "lowDisp/mit_Dp1_5000"  #"symetric/sparse_5000.0"
+
+fileName = 'mit/sparse_5000.0' #"lowDisp/mit_Dp1_5000"  #"symetric/sparse_5000.0"
 print "load plume data from file %s"% fileName
 plum = plumeClass.plumeEtAl(None, True, fileName )
 
@@ -38,10 +24,62 @@ plum = plumeClass.plumeEtAl(None, True, fileName )
 #plt.scatter(plum.plumeHist[-1].ys, plum.plumeHist[-1].xs)
 #show()
 
-plotHex = True
+plotHex = False
 plotSpont = False
 plotPDF = False
 testFilter = False
+plotFlows = True
+
+
+"""
+
+
+We need 3 plots that show using 3 different levels of sparsity
+a plot at 10 seconds of the sparse plume, heatmap style
+
+and a corresponding sponeneity plot
+
+
+"""
+
+
+if plotFlows:
+
+	print "Here i am going to plot both of the fluid flows side by side, or just 1 at a time is fine.  "
+
+
+
+	flowS = flowField.flowField('simple')
+	flowM = flowField.flowField('mit')
+
+	gap = 10
+
+	plt.subplot(1, 2, 1)
+	#plt.axes('equal')
+	plt.quiver( flowS.x[::gap,::gap], flowS.y[::gap,::gap], \
+		flowS.vy[::gap, ::gap], flowS.vx[::gap, ::gap], 
+		color = 'g', units='x',pivot=( 'tail' ),
+        linewidths=(1,), edgecolors=('g'), headaxislength=10 )
+	
+	plt.subplot(1, 2, 2)
+
+	plt.quiver( flowM.x[::gap,::gap], flowM.y[::gap,::gap], \
+		flowM.vy[::gap,::gap], flowM.vx[::gap,::gap], 
+		color = 'b', units='x',pivot=( 'tail' ),
+        linewidths=(1,), edgecolors=('b'), headaxislength=20)
+
+	show()
+	
+	
+
+
+
+
+
+
+
+
+
 
 
 if testFilter:
@@ -146,14 +184,14 @@ if plotPDF:
 
 
 if plotSpont:
-	start = int(4/0.002)
+	start = int(5.5/0.002)
 	end   = int(6/0.002)
 	step = 5
 	fileNumber = 1
 	
 	""" We need to figure out an equation to relate these"""
-	r = 0.02
-	norm = (25.0/plum.param.den)
+	r = 0.5
+	norm = (3.8/plum.param.den)
 	sparse = 1
 
 	cL = []
@@ -161,7 +199,7 @@ if plotSpont:
 
 	print "start %s, stop %s" %(start, end)
 
-	fig = plt.figure()
+
 	for T in xrange(start, end, step):
 
 		""" This check and load deal should be put inside of the 
@@ -179,16 +217,17 @@ if plotSpont:
 		#show()
 
 		c = plum.plumeHist[int(T%(1/plum.param.dt))].\
-			concentration(10, 22, r, sparse) 
+			concentration(8, 22, r, sparse) * norm
 		#c =  c * norm
 		#print c
 		cL.append(c)
 
-	fig2 = plt.figure(2)
-	plt.scatter(plum.plumeHist[-1].ys, plum.plumeHist[-1].xs)
-	show()
+	#fig2 = plt.figure(2)
+	#plt.scatter(plum.plumeHist[-1].ys, plum.plumeHist[-1].xs)
+	#show()
 	mean = np.mean(cL)
-
+	fig = plt.figure()
+	ylim([0,1])
 	plt.plot(cL)
 	#plt.plot(([0,0]), ([mean,mean]), 'r')
 
@@ -207,16 +246,17 @@ if plotSpont:
 
 if plotHex:
 
-	start = 6
-	end = 7
+	start = 10
+	end = 11
 	h = []
 	xe = []
 	ye = []
+	sparse = 5
 	for t in range(start,end):
 		print t
 		plum.loadData(fileName, int(t)+1)
 		heatmap, xedges, yedges = np.histogram2d(plum.plumeHist[-1].\
-				ys[::], plum.plumeHist[-1].xs[::], bins=200)
+				ys[::sparse], plum.plumeHist[-1].xs[::sparse], bins=75)
 
 		heatmap = np.rot90(heatmap)
 		heatmap = np.flipud(heatmap)

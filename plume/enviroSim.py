@@ -44,9 +44,28 @@ plum = plumeClass.plumeEtAl(None, True, fileName )
 sc = None
 dummyMsg = positionSim_t()
 flow = flowField.flowField(plum.param.flow)
-#r = 0.5
-norm = (45.0/plum.param.den)
+
 fileNumber = 1
+
+
+
+print "r = %s"%r
+r = 0.1
+
+
+n1 = (-37.3 * r + 20.54)/r
+#or
+n2 = (-.3364 *r + 1.1182)/(r*r)
+
+print "norm of %s or %s"%(n1, n2)
+
+n = n2
+
+norm = (n/plum.param.den)
+
+
+
+print "new r = %s"%r
 
 """ 										  """
 
@@ -131,10 +150,32 @@ if plotTrue:
 
 
 """
+def saveData():
+	global movDat
+	
+	filename = "runs/r%s_%s.p" %(r, plum.param.den)
+	#fileName1 = "data/%s_%s_%s.p" %(t, self.param.dt, self.param.den)
+	f = open(filename,'wb')
+	cPickle.dump(movDat,f,2)
+	f.close()
+	print "saving file to %s" %filename
+	
 
-
-def genMovie(channel, data):
+def genMovie(channel = 1, data = 0):
 	print "save a shitload of frames and generate a movie from them"
+
+
+	if channel != 1:
+		#that means I was signaled by the simulation to begin making move
+		print "I'm going to pickle the movie so I can load it later"
+		saveData()
+	else:
+		print "You're going to have to load some data first"
+		
+
+
+
+
 
 
 	files = []
@@ -167,14 +208,14 @@ def genMovie(channel, data):
 		fig.savefig(fname)
 		files.append(fname)
 	print "making movie animation.mpg - this may take a while"
-	os.system("mencoder 'mf://frames/_tmp*.png' -mf type=png:fps=10 -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o animation2.mpg")
+	os.system("mencoder 'mf://frames/_tmp*.png' -mf type=png:fps=10 -ovc lavc -lavcopts vcodec=wmv2 -oac copy -o animation4.mpg")
 
 
 
 
 def makeMovie(channel, data):
 
-
+	print "I don't know if this is any different than the other one..."
 	print "received makeMove finsih message"
 
 	global movDat
@@ -332,6 +373,9 @@ def findData(T, x, y):
 	vy, vx = flow.getVal(y,x)
 	#concentration
 	c = []
+
+
+	print plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r)
 	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r)  * norm)
 	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x+(2*r), y, r)  * norm)
 	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x-(2*r), y, r)  * norm)
@@ -405,14 +449,19 @@ if plotTrue:
 	plt.subplots_adjust(left=0.05, right=0.95, top=0.9, bottom=0.05)
 
 
-print "enviroSim is ready"
-try:
-	while True:
-	    lc.handle()
-except KeyboardInterrupt:
-	pass
 
+if __name__ == '__main__':
+    
 
+	print "enviroSim is ready"
+	try:
+		while True:
+			lc.handle()
+	except KeyboardInterrupt:
+		pass
+
+else:
+	print "I am just going to hold tight and run whatever function you want"
 
 
 """

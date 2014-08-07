@@ -9,4 +9,6 @@
 WriteUp
 simPlots
 plots
+*.mpg
+*.png
 

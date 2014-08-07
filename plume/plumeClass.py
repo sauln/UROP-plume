@@ -364,7 +364,7 @@ class plume():
 			np.asarray(self.puffSoA.xs), \
 			np.asarray(self.puffSoA.ys), vx, vy  )
 		self.puffSoA.xs = self.puffSoA.xs.tolist()
-		self.puffSoA.ys = self.puffSoA.ys.tolist()
+		sel.puffSoA.ys = self.puffSoA.ys.tolist()
 
 	def plotPlume(self):
 		flow = self.flow
@@ -377,7 +377,6 @@ class plume():
 				flow.vy[::6, ::6], flow.vx[::6, ::6], 
 				color = 'r', units='x',pivot=( 'tail' ),
 		        linewidths=(2,), edgecolors=('k'), headaxislength=5 )
-	
 		#plot the puffs
 		xp, yp = self.getPointsSoA()
 		s = scatter(yp,xp)
