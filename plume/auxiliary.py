@@ -45,7 +45,7 @@ class Parameters():
 		else:		
 			self.xi = 10.0
 		self.yi = 26.0
-		
+		self.cyclic = False
 		self.dispersion = 0.2 #dispersion coefficient
 
 		self.dispersion = float(self.dispersion)

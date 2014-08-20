@@ -310,8 +310,11 @@ class plume():
 		wave = 2* pi* 2
 
 		print "At time %s"%T
-
-		add = self.param.den * (np.cos(wave * T*self.param.dt) + 1) *self.param.dt
+		if self.param.cyclic:
+			add = self.param.den * \
+				(np.cos(wave * T*self.param.dt) + 1) *self.param.dt
+		else:	
+			add = self.param.ratio
 		print "Adding %s to the queue" %add
 
 
@@ -332,8 +335,8 @@ class plume():
 		
 	def movePuffs(self):
 		#self.kinzelbach1990SoA()
-		#self.doKinzelbach1990()
-		self.NegheebyStep()
+		self.doKinzelbach1990()
+		#self.NegheebyStep()
 		#self.NegheebyWOran()
 		#self.doSameKinzelbach()
 
@@ -348,7 +351,7 @@ class plume():
 		vx, vy = self.flow.getVectorSoA(self.puffSoA.xs, self.puffSoA.ys)
 		vx = np.asarray(vx)
 		vy = np.asarray(vy)
-		self.puffSoA.xs, self.puffSoA.ys = step.kinzelbach1990SoA( \
+		self.puffSoA.xs, self.puffSoA.ys = step.kinzelbach1990( \
 			np.asarray(self.puffSoA.xs), \
 			np.asarray(self.puffSoA.ys), vx, vy  )
 		self.puffSoA.xs = self.puffSoA.xs.tolist()

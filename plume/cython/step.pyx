@@ -46,7 +46,7 @@ def kinzelbach1990(np.ndarray[DTYPE_t, ndim=1] x, np.ndarray[DTYPE_t, ndim=1] y,
 		of an array of structures
 	'''
 
-	cdef float D = 0.5 #diffusion coefficient
+	cdef float D = 0.2 #diffusion coefficient
 	cdef float dt = 0.002
 	cdef float each, alf, v, i, ad, di
 	cdef np.ndarray h = np.zeros([x.shape[0], 1], dtype=DTYPE)

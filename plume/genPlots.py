@@ -15,7 +15,7 @@ import scipy
 
 
 
-fileName = 'wave/cyclic1_5000' #"lowDisp/mit_Dp1_5000"  #"symetric/sparse_5000.0"
+fileName = 'mit/sparse_5000.0' #'wave/cyclic1_5000' #"lowDisp/mit_Dp1_5000"  #"symetric/sparse_5000.0"
 print "load plume data from file %s"% fileName
 plum = plumeClass.plumeEtAl(None, True, fileName )
 
@@ -24,13 +24,16 @@ plum = plumeClass.plumeEtAl(None, True, fileName )
 #plt.scatter(plum.plumeHist[-1].ys, plum.plumeHist[-1].xs)
 #show()
 
-plotHex = True
+plotHex = False
 plotSpont = False
 plotPDF = False
 testFilter = False
 plotFlows = False
+plotSpontVaryR = False
+plotSpontVaryS = False
 
-
+plotSpontVaryBoth = False
+plotOverlay = True
 """
 
 
@@ -41,6 +44,48 @@ and a corresponding sponeneity plot
 
 
 """
+
+
+if plotOverlay:
+	'''
+	going to overlay the plots from multiple different files
+	'''
+	
+
+
+	files = ['mit/sparse_5000.0', 'models/kinzel90/sparse_5000']
+	fileNumber = 5
+
+
+
+	fig = figure()
+
+	ax = fig.add_subplot(111, aspect='equal')
+	ax.axis([0,20,0,30])
+	#plt.axes('equal')
+	sparse = 50
+
+
+
+
+	plum.loadData(files[0], fileNumber)
+	a = plt.scatter(plum.plumeHist[-1].ys[::sparse], plum.plumeHist[-1].xs[::sparse], c='b')
+
+	plum.loadData(files[1], fileNumber)
+	b = plt.scatter(plum.plumeHist[-1].ys[::sparse], plum.plumeHist[-1].xs[::sparse], c='r')
+
+
+
+
+
+
+
+
+
+
+	show()
+
+
 
 
 if plotFlows:
@@ -183,58 +228,258 @@ if plotPDF:
 
 
 
-if plotSpont:
+if plotSpontVaryS:
+
+	#now I am going to plot multiple sponts on the same plot.  
+
+	start = int(5.2/0.002)
+	end   = int(6/0.002)
+	step = 5
+	fileNumber = 1
+	x = 8.0; y = 22.0
+	
+
+	r = 0.5
+
+	norm = (-.3364 *r + 1.1182)/(r*r) 
+	#sparse = [1,5,20,100]
+ 	sparse = [1,10,50]#, 100]
+
+	cLists = []
+	#for r in sparse:
+	#	cLists.append(list())
+	
+	print "start %s, stop %s" %(start, end)
+
+	#for s, cL in zip(sparse, cLists):
+	#	tmp = []
+	
+
+
+	for s in sparse:
+		tmp = []
+		for T in xrange(start, end, step):
+
+			if( T*plum.param.dt >= fileNumber and T != 0):
+				'''if we are inside of the next file, load it'''
+				global fileNumber
+				fileNumber = int( T/(1/plum.param.dt) ) + 1 
+				print "load next file"
+				t = T/(1/plum.param.dt)
+				plum.loadData(fileName, fileNumber)
+
+			c = plum.plumeHist[int(T%(1/plum.param.dt))].\
+				concentration(x, y, r, s) * norm
+
+			tmp.append(c)
+
+		cLists.append([t/max(tmp) for t in tmp])
+
+
+	#con = [t/max(tmp) for t in tmp] 
+
+
+	#now normalize:
+	#print "eror here"
+	#print type(cLists)
+	#print type(cLists[0])
+	#print max(cLists[0])
+	#maxx = 0
+	#for c in cLists:
+	#	print type(c)#
+	#	if max(c) > maxx:
+	#		maxx = max(c)
+
+	#print maxx
+
+	
+	#newCl = []
+	#for c in cLists:
+	#	newCl.append([v/maxx for v in c])
+	#	print [v/maxx for v in c]
+	
+	
+
+
+	fig = plt.figure()
+	ylim([0,1.5])
+
+	#for cL, r in zip(cLists, sparse):
+	#mean = np.mean(cL)
+	for con, s in zip(cLists, sparse):
+		plt.plot(con, label='%s'%s)
+
+	#plt.plot(([0,0]), ([mean,mean]), 'r')
+
+		#plt.axhline(np.mean(cL), color='b', linestyle='dashed', linewidth=2)
+	plt.title("Concentration at (%s, %s) with sparsity, not radius."%(x,y))
+	plt.legend()
+	xlabel("time")
+	ylabel("c/c max")
+	savefig('../plots/spontCompareSparse.png')
+	
+	show()
+
+
+if plotSpontVaryBoth:
+
+
+	#now I am going to plot multiple sponts on the same plot.  
+
 	start = int(5.5/0.002)
 	end   = int(6/0.002)
 	step = 5
 	fileNumber = 1
 	
-	""" We need to figure out an equation to relate these"""
-	r = 0.5
-	norm = (3.8/plum.param.den)
-	sparse = 1
 
-	cL = []
 
+	#we are going to run with 3 different settings
+
+	rs = [ 0.5, 0.2, 0.1]
+
+	n = [(-.3364 *r + 1.1182)/(r*r) for r in rs]
+	sparse = [1,5,20]
+
+ 
+	cLists = []
+	for r in rs:
+		
+		cLists.append(list())
+	
 
 	print "start %s, stop %s" %(start, end)
+	x = 8; y = 22
+	for r, norm, cL, s in zip(rs, n, cLists,sparse):
 
+		for T in xrange(start, end, step):
 
-	for T in xrange(start, end, step):
+			""" This check and load deal should be put inside of the 
+				plume class, not the simulator					 """
+			if( T*plum.param.dt >= fileNumber and T != 0):
+				'''if we are inside of the next file, load it'''
+				global fileNumber
+				fileNumber = int( T/(1/plum.param.dt) ) + 1 
+				print "load next file"
+				t = T/(1/plum.param.dt)
+				plum.loadData(fileName, fileNumber)
 
-		""" This check and load deal should be put inside of the 
-			plume class, not the simulator					 """
-		if( T*plum.param.dt >= fileNumber and T != 0):
-			'''if we are inside of the next file, load it'''
-			global fileNumber
-			fileNumber = int( T/(1/plum.param.dt) ) + 1 
-			print "load next file"
-			t = T/(1/plum.param.dt)
-			plum.loadData(fileName, fileNumber)
+			c = plum.plumeHist[int(T%(1/plum.param.dt))].\
+				concentration(x, y, r, s) * norm
+
+			cL.append(c)
 		
-		#plt.scatter(plum.plumeHist[int(T%(1/plum.param.dt))].ys, \
-		#	plum.plumeHist[int(T%(1/plum.param.dt))].xs)
-		#show()
 
-		c = plum.plumeHist[int(T%(1/plum.param.dt))].\
-			concentration(8, 22, r, sparse) * norm
-		#c =  c * norm
-		#print c
-		cL.append(c)
+	#now normalize:
+	maxx = 0
+	for c in cLists:
+		if max(c) > maxx:
+			maxx = max(c)
 
-	#fig2 = plt.figure(2)
-	#plt.scatter(plum.plumeHist[-1].ys, plum.plumeHist[-1].xs)
-	#show()
-	mean = np.mean(cL)
+	print maxx
+
+
+
+	newCl = []
+	for c in cLists:
+		newCl.append([v/maxx for v in c])
 	fig = plt.figure()
-	ylim([0,1])
-	plt.plot(cL)
+	#ylim([0,1])
+
+	for cL, r in zip(newCl, rs):
+	#mean = np.mean(cL)
+	
+		plt.plot(cL, label='%s'%r)
+
 	#plt.plot(([0,0]), ([mean,mean]), 'r')
 
-	plt.axhline(np.mean(cL), color='b', linestyle='dashed', linewidth=2)
-	plt.title("mean: %s" %mean)
-	savefig('../plots/newSpont/%sand%s.png'%(r, sparse))
+		#plt.axhline(np.mean(cL), color='b', linestyle='dashed', linewidth=2)
+	plt.title("Concentration at (%s, %s) with no change in sparsity"%(x,y))
+	plt.legend()
+	xlabel("time")
+	ylabel("c/c max")
+	savefig('../plots/spontCompareRadius.png')
+	
+	show()
 
+
+
+if plotSpontVaryR:
+
+
+	#now I am going to plot multiple sponts on the same plot.  
+
+	start = int(5.5/0.002)
+	end   = int(6/0.002)
+	step = 5
+	fileNumber = 1
+	
+
+
+	#we are going to run with 3 different settings
+
+	rs = [ 0.5, 0.2, 0.1, 0.05]
+	n = [(-.3364 *r + 1.1182)/(r*r) for r in rs]
+
+	sparse = 1
+ 
+	cLists = []
+	for r in rs:
+		
+		cLists.append(list())
+	
+
+	print "start %s, stop %s" %(start, end)
+	x = 8; y = 22
+	for r, norm, cL in zip(rs, n, cLists):
+
+		for T in xrange(start, end, step):
+
+			""" This check and load deal should be put inside of the 
+				plume class, not the simulator					 """
+			if( T*plum.param.dt >= fileNumber and T != 0):
+				'''if we are inside of the next file, load it'''
+				global fileNumber
+				fileNumber = int( T/(1/plum.param.dt) ) + 1 
+				print "load next file"
+				t = T/(1/plum.param.dt)
+				plum.loadData(fileName, fileNumber)
+
+			c = plum.plumeHist[int(T%(1/plum.param.dt))].\
+				concentration(x, y, r, sparse) * norm
+
+			cL.append(c)
+		
+
+	#now normalize:
+	maxx = 0
+	for c in cLists:
+		if max(c) > maxx:
+			maxx = max(c)
+
+	print maxx
+
+
+
+	newCl = []
+	for c in cLists:
+		newCl.append([v/maxx for v in c])
+	fig = plt.figure()
+	#ylim([0,1])
+
+	for cL, r in zip(newCl, rs):
+	#mean = np.mean(cL)
+	
+		plt.plot(cL, label='%s'%r)
+
+	#plt.plot(([0,0]), ([mean,mean]), 'r')
+
+		#plt.axhline(np.mean(cL), color='b', linestyle='dashed', linewidth=2)
+	plt.title("Concentration at (%s, %s) with no change in sparsity"%(x,y))
+	plt.legend()
+	xlabel("time")
+	ylabel("c/c max")
+	savefig('../plots/spontCompareRadius.png')
+	
 	show()
 
 
