@@ -18,8 +18,8 @@ class robot():
 		self.U0   = 0.3375
 		self.D2U0 = 0.2109 
 		self.Xhatdot = [0.2, 0.2]
-		self.X0 = [9.0, 24.0]
-		self.Xhat = [9.0, 24.0]
+		self.X0 = [11.0, 23.0]
+		self.Xhat = [11.0, 23.1]
 		self.theta = theta
 		self.con = zeros(5)
 		self.msg = positionSim_t()

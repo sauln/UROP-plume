@@ -67,9 +67,9 @@ def gradientDivergence(c, xR, xL, yU, yD, vx, vy):#yU,yD,xR,xL, vx, vy):# y, x, 
 
 
 
-
+count = 0
 def conHandler(channel, data):
-	
+	global count
 	global u
 	global X0
 	global Xhat
@@ -79,9 +79,6 @@ def conHandler(channel, data):
 	c = msg.con
 	V0   = matrix(msg.V0).H		#[2]
 
-	#for each in c:
-	#	print "concentrations: %s" %each
-	#print V0
 
 	DU_dx0, DU_dy0, D2U0 = gradientDivergence(c[0], c[1],c[2],c[3],c[4], V0[0], V0[1])
 	
@@ -132,8 +129,19 @@ def conHandler(channel, data):
 
 	F    = LA.inv(B)  *  (-A*u-c0*(u-D*vd))
 	du   = (A*u+B*F)*Dt
+
+
 	u = du+u
 
+
+	#print du
+	#print "norm du %s  con: %s"%(linalg.norm(du), c)
+	#print "flow vector: %s"%V0
+
+	#if linalg.norm(du) < 0.2 and c[0] < 0.005:
+	#	print "start turning around\n\n\n\n\n\n\n\n\n"
+	#	print du
+	#print "help"
 	retMsg = positionSim_t()
 	retMsg.u = u
 	lcm.publish("controlReturn",retMsg.encode())

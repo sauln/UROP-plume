@@ -35,12 +35,14 @@ k11 = -d11/m11;k21 = -d33/m33
 k31 = 1/m11;k41 = 1/(m33*l)
 A  = diag( [k11,k21] )
 B  = ([k31, k31] ,[-k41, k41])
-zreal = matrix([[24],[9]])
-theta = 2*pi*random.rand(1,1)
+zreal = matrix([[23.1],[11]])
+
+
+theta = 2*pi*0
 x_sur = zreal-l0*matrix([[float(cos(theta))],[float(sin(theta))]])
 xvector = zeros((2,0))
-u = matrix([ [.5], [.5] ])
-vd = matrix([ [0], [0] ])
+u = matrix([ [.1], [.1] ])
+vd = matrix([ [.1], [.1] ])
 xytheta = matrix([[float(x_sur[0])],[float(x_sur[1])],[theta]])
 
 
@@ -58,14 +60,14 @@ Dis_thresh 	= 2000;		#distance to activate leader control
 k1 = 0.75;                  
 k2 = 0;    				#estimator gradient gain
 k3 = 5;                 #adaptive control for estimator gradient gain
-k4 = 5; 				#rotation gain--along the tangent direction
+k4 = 5000; 				#rotation gain--along the tangent direction
 
-Xhatdot_max		= 10; 	#maximum velocity -- estimated value 
-V0_robot_max	= 10; 	#robot velcity
-v_compensate	= 1;    #velocity compensation   --- either 0 or 1, (on or off)
-free_speed		= 6; 	#leader free speed for partroling
+Xhatdot_max		= 50; 	#maximum velocity -- estimated value 
+V0_robot_max	= 50; 	#robot velcity
+v_compensate	= 0;    #velocity compensation   --- either 0 or 1, (on or off)
+free_speed		= 40; 	#leader free speed for partroling
 c_leader		= 20; 	#leader gain to drive the two leader close
-c_r     		= 5; 	#robot gain to observed value
+c_r     		= 50; 	#robot gain to observed value
 U_s			= 3;        #Concentration of polutant at the source 
 threshold 	= 0.1*U_s;  #threshold of concentration detection
 

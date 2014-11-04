@@ -6,7 +6,7 @@ import numpy as np
 
 from pylab import *
 import matplotlib.pyplot as plt
-
+import matplotlib.colors as colors
 import cPickle
 
 import lcm
@@ -32,7 +32,7 @@ from constants import r
 #print sys.argv[1]
 
 #fileName = sys.argv[1]
-fileName = 'mit/sparse_5000.0'
+fileName =  'models/nagheeby/sparse_5000' #'icra2015sim/love_5000'
 print "load plume data from file %s"% fileName
 
 """ 										  """
@@ -50,7 +50,7 @@ fileNumber = 1
 
 
 print "r = %s"%r
-r = 0.5
+r = 1.0
 
 
 n1 = (-37.3 * r + 20.54)/r
@@ -59,7 +59,7 @@ n2 = (-.3364 *r + 1.1182)/(r*r)
 
 print "norm of %s or %s"%(n1, n2)
 
-n = n2
+n = 1.0
 
 norm = (n/plum.param.den)
 
@@ -161,6 +161,69 @@ def saveData():
 	print "saving file to %s" %filename
 	
 
+
+
+def genSomePlots(channel = 1, data = 0):
+
+	fig = figure(1)
+	
+	#cax = fig.add_axes([0.05, 0.1, 0.03, 0.8])
+	norm = colors.Normalize()#vmin=0, vmax=1,clip = False)
+
+
+
+	print shape(movDat.heat[-1])
+	a = movDat.heat[-1]
+	a = max(a.max(axis=1))
+
+	movD = movDat.heat[-1] / float(a)
+	print movD
+
+	#im = plt.imshow(movDat.heat[-1], extent = movDat.ext[-1], norm=norm)#, vmin=0, vmax=200)
+	im = plt.imshow(movD, extent = movDat.ext[-1]) 
+
+	plt.scatter(movDat.xx, movDat.yy, s = 50,c = 'g', marker='o', zorder = 1)#robot
+	#plt.axes([0,30, 0, 20])
+	ax = fig.add_subplot(111)#, aspect='equal')
+
+	print im
+	fig.colorbar(im) #, ax=ax)#im, ax=ax)
+
+	#ax, _ = mpl.colorbar.make_axes(plt.gca(), shrink=0.5)
+	#cbar = mpl.colorbar.ColorbarBase(ax, cmap=cm,
+                       #norm=mpl.colors.Normalize(vmin=-0.5, vmax=1.5))
+	plt.axis([0,20,0,30])
+	plt.axis(aspect= 'equal')
+	xlabel("$m$")
+	ylabel("$m$")
+
+
+	fig2 = figure(2)
+
+	t = [m/500.0 for m in movDat.T]
+
+	#c = [c/max(movDat.c) for c in movDat.c]#/max(movDat.c)
+
+	plt.plot(t, movDat.c)
+	xlabel('$t$')
+	ylabel(r"$\frac{c}{c_{max}}$")
+	#ylabel("$\frac{c}{c_{max}}$"
+	plt.ylim([0,1])
+
+
+
+
+
+	show()
+
+
+
+
+
+
+
+	pass
+
 def genMovie(channel = 1, data = 0):
 	print "save a shitload of frames and generate a movie from them"
 
@@ -171,43 +234,48 @@ def genMovie(channel = 1, data = 0):
 		saveData()
 	else:
 		print "You're going to have to load some data first"
+		#movDat = load('runs/r0.5_5000.0.p')
 		
-
-
-
-
-
-
 	files = []
-	fig = plt.figure()
-	plt.clf()
-
-	plt.title('Simplest default with labels')
-	fig.ax  = plt.subplot2grid((2,2), (0,0), rowspan= 2)
+	#fig = plt.figure()
+	#fig2 = plt.figure()
+	#plt.clf()
+	figure(1)
+	plt
+	#plt.title('Simplest default with labels')
+	fig.ax #.ax  #3= plt.subplot2grid((2,2), (0,0), rowspan= 2)
 	fig.ax.axis([0,20,0,30])
-	fig.ax1  = plt.subplot2grid((2,2), (0,1))
-	fig.ax2  = plt.subplot2grid((2,2), (1,1))
+	
+	fig2.ax1  = plt.subplot2grid((2,2), (0,0), rowspan= 2)
+	fig2.ax1.axis([0,20,0,30])
+	
+
+	
+	#fig.ax1  = plt.subplot2grid((2,2), (1,1), rowspan=2)
+	#fig.ax2  = plt.subplot2grid((2,2), (1,1))
 
 
 	
 	print shape(movDat.T)[0]
 
-
 	for T, heat, ext, x, y, c, i  in \
 		zip(movDat.T, movDat.heat, movDat.ext, movDat.xx, movDat.yy, movDat.c, xrange(shape(movDat.T)[0]) ):
 		im = fig.ax.imshow(heat, extent = ext)#, vmin=0, vmax=200)
 		fig.ax.scatter(x, y, s = 50,c = 'g', marker='o', zorder = 1)#robot
-		fig.ax.set_title("Simulation of '%s'\nT=%s" \
-			%( fileName, ( T*plum.param.dt)) )
-		fig.ax1.scatter(T, c)
-		fig.ax1.set_title("con: %s"%c)
-		fig.ax2.scatter(x,y)
-
+		fig.ax.set_xlabel("m")
+		fig.ax.set_ylabel("m")		
+		#fig.ax.set_title("Simulation of '%s'\nT=%s" \
+		#	%( fileName, ( T*plum.param.dt)) )
+		fig2.ax1.scatter(T-1500, c)
+		#fig.ax1.set_title("con: %s"%c)
+		#fig.ax2.scatter(x,y)
+		fig2.ax1.set_xlabel("time")
+		fig2.ax1.set_ylabel("c/c max")
 		cax = fig.add_axes([0.05, 0.1, 0.03, 0.8])
 		fig.colorbar(im, cax)#im, cax=cax)
 
 
-		fname = 'frames/_tmp%03d.png'%i
+		fname = 'frames2/_tmp%03d.png'%i
 		print 'saving frame', fname
 		fig.savefig(fname)
 		files.append(fname)
@@ -217,18 +285,25 @@ def genMovie(channel = 1, data = 0):
 
 
 
-def makeMovie(channel, data):
+def makeMovie(channel, data = 0):
 
 	print "I don't know if this is any different than the other one..."
 	print "received makeMove finsih message"
 
-	global movDat
+	if channel == 1:
+		f = open("runs/r0.5_5000.0.p",'rb')
+		print type(f)
+		mD = cPickle.load(f)
+	else:
+
+		global movDat
+
 	plt.close("all")
 	fig = plt.figure()
 	plt.clf()
 	show()
 	
-	plt.title('Simplest default with labels')
+	#plt.title('Simplest default with labels')
 	fig.ax  = plt.subplot2grid((2,2), (0,0), rowspan= 2)
 	fig.ax.axis([0,20,0,30])
 
@@ -237,15 +312,18 @@ def makeMovie(channel, data):
 	for T, heat, ext, x, y, c in zip(movDat.T, movDat.heat, movDat.ext, movDat.xx, movDat.yy, movDat.c):
 		im = fig.ax.imshow(heat, extent = ext)#, vmin=0, vmax=200)
 		fig.ax.scatter(x, y, s = 50,c = 'g', marker='o', zorder = 1)#robot
-		fig.ax.set_title("Simulation of '%s'\nT=%s" \
-			%( fileName, ( T*plum.param.dt)) )
+		#fig.ax.set_title("Simulation of '%s'\nT=%s" \
+		#	%( fileName, ( T*plum.param.dt)) )
 		fig.ax1.scatter(T, c)
-		fig.ax1.set_title("con: %s"%c)
-		cax = fig.add_axes([0.9, 0.1, 0.03, 0.8])
-		fig.colorbar(im, cax)#im, cax=cax)
+		#fig.ax1.set_title("con: %s"%c)
+		#cax = fig.add_axes([0.9, 0.1, 0.03, 0.8])
+		#fig.colorbar(im, cax)#im, cax=cax)
 		plt.draw()
 
 	print "finished movie. how do I save it off now?"
+
+
+
 
 def saveMovie(T, rx, ry,c ):#, div, dx, dy):
 	global fig, sc, movDat
@@ -294,11 +372,6 @@ def updatePlot(T, rx, ry,c ):#, div, dx, dy):
 
 
 	movDat.add(Hmasked, extent, rx, ry,T, c)
-
-
-
-
-
 
 	#sc = fig.ax.scatter(plum.plumeHist[int(T%(1/plum.param.dt))].\
 	#	ys[::150],plum.plumeHist[int(T%(1/plum.param.dt))].xs[::150])
@@ -381,10 +454,10 @@ def findData(T, x, y):
 
 	print "concentration: %s"%plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r)
 	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y, r)  * norm)
-	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x+(2*r), y, r)  * norm)
-	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x-(2*r), y, r)  * norm)
-	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y+(2*r), r) * norm)
-	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y-(2*r), r)  * norm)
+	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x+(.2*r), y, r)  * norm)
+	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x-(.2*r), y, r)  * norm)
+	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y+(.2*r), r) * norm)
+	c.append( plum.plumeHist[int(T%(1/plum.param.dt))].concentration(x, y-(.2*r), r)  * norm)
 
 	#print "from environment: %s" %c
 
@@ -423,7 +496,7 @@ print "initiate lcm"
 lc = lcm.LCM()
 
 subs1 = lc.subscribe("envRetrieve", retrieve) 
-subs2 = lc.subscribe("finishSim", genMovie)
+subs2 = lc.subscribe("finishSim", genSomePlots) #genMovie)
 #lcm.publish( "finishSim", msg.encode() )
 
 if plotTrue:

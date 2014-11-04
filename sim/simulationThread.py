@@ -30,12 +30,12 @@ from constants import Dt, T_thresh, ts
 
 #setup robot object
 rob = robotClass.robot()
-T_thresh = 2
+T_thresh = 3
 T_thresh = T_thresh*(1/Dt)
 
 dummyMsg = positionSim_t()
 
-
+ts = 10.0
 print "Time steps of: %s\nBegin robot at %s\nUntil %s"%(Dt, T_thresh, ts/Dt)
 
 

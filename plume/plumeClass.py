@@ -335,8 +335,8 @@ class plume():
 		
 	def movePuffs(self):
 		#self.kinzelbach1990SoA()
-		self.doKinzelbach1990()
-		#self.NegheebyStep()
+		#self.doKinzelbach1990()
+		self.NegheebyStep()
 		#self.NegheebyWOran()
 		#self.doSameKinzelbach()
 

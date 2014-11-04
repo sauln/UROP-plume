@@ -142,7 +142,7 @@ def Negheeby2010(		np.ndarray[DTYPE_t, ndim=1] x,
 						float dispIn):
 		#for some reason x and y got switched - 
 	''' 
-		Equation described in Kinzelback1990
+		Equation described in Nagheeby? and the Chao..
 		adapted to incorporate a structure of arrays instead 
 		of an array of structures
 	'''
@@ -170,12 +170,12 @@ def Negheeby2010(		np.ndarray[DTYPE_t, ndim=1] x,
 	cdef np.ndarray[DTYPE_t, ndim=1] alphaX = np.asarray([np.random.normal(0,1) for each in x])
 	cdef np.ndarray[DTYPE_t, ndim=1] alphaY = np.asarray([np.random.normal(0,1) for each in x])
 	"""
-	cdef np.ndarray[DTYPE_t, ndim=1] alphaX = np.random.uniform(0,1, x.size)
-	cdef np.ndarray[DTYPE_t, ndim=1] alphaY = np.random.uniform(0,1, x.size)
+	cdef np.ndarray[DTYPE_t, ndim=1] alphaX = np.random.uniform(-1,1, x.size)
+	cdef np.ndarray[DTYPE_t, ndim=1] alphaY = np.random.uniform(-1,1, x.size)
 
 
-	cdef np.ndarray[DTYPE_t, ndim=1] thetaX = np.random.uniform(0,1, x.size)
-	cdef np.ndarray[DTYPE_t, ndim=1] thetaY = np.random.uniform(0,1, x.size)
+	cdef np.ndarray[DTYPE_t, ndim=1] thetaX = np.random.uniform(-1,1, x.size)
+	cdef np.ndarray[DTYPE_t, ndim=1] thetaY = np.random.uniform(-1,1, x.size)
 
 
 	""" velocity vector """ 
