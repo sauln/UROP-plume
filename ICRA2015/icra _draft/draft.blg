@@ -1,0 +1,45 @@
+This is BibTeX, Version 0.99c (TeX Live 2009/Debian)
+The top-level auxiliary file: draft.aux
+The style file: plain.bst
+Database file #1: plumeICRA_2015.bib.bib
+You've used 25 entries,
+            2118 wiz_defined-function locations,
+            666 strings with 8413 characters,
+and the built_in function-call counts, 8284 in all, are:
+= -- 796
+> -- 406
+< -- 1
++ -- 161
+- -- 134
+* -- 588
+:= -- 1423
+add.period$ -- 75
+call.type$ -- 25
+change.case$ -- 142
+chr.to.int$ -- 0
+cite$ -- 25
+duplicate$ -- 292
+empty$ -- 644
+format.name$ -- 134
+if$ -- 1718
+int.to.chr$ -- 0
+int.to.str$ -- 25
+missing$ -- 25
+newline$ -- 128
+num.names$ -- 50
+pop$ -- 116
+preamble$ -- 1
+purify$ -- 117
+quote$ -- 0
+skip$ -- 196
+stack$ -- 0
+substring$ -- 553
+swap$ -- 39
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 100
+warning$ -- 0
+while$ -- 70
+width$ -- 27
+write$ -- 272

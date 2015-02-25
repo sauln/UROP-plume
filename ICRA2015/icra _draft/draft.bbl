@@ -1,0 +1,152 @@
+\begin{thebibliography}{10}
+
+\bibitem{GNOME}
+C.~J. Beegle-Krause.
+\newblock General {NOAA} oil modelling environment ({GNOME}): A new spill
+  trajectory model.
+\newblock {\em Proceedings of the 2001 International Oil Spill Conference},
+  2:865--871, 2001.
+
+\bibitem{Bosanquet1936}
+C.H. Bosanquet and J.L. Pearson.
+\newblock The spread of smoke and gases from chimneys.
+\newblock {\em Trans. Faraday Soc.}, 32:1249, 1936.
+
+\bibitem{Chao2003}
+X.~Chao, N.~J. Shankar, and S.~S.~Y. Wang.
+\newblock Development and application of oil spill model for {S}ingapore
+  coastal waters.
+\newblock {\em J. Hydraul. Eng.}, 129:495--503, 2003.
+
+\bibitem{Crimaldi2002}
+John~P. Crimaldi, Megan~B Wiley, and Jeffrey~R Koseff.
+\newblock The relationship between mean and instantaneous structure in
+  turbulent passive scalar plumes.
+\newblock {\em Journal of Turbulence}, 3:014, 2002.
+
+\bibitem{Dominicis2013}
+M.~De Dominicis, N.~Pinardi, G.~Zodiatis, and R.~Archetti.
+\newblock {MEDSLIK-II}, a {L}agrangian marine surface oil spill model for
+  short-term forecasting - part 2: Numerical simulations and validations.
+\newblock {\em Geosci. Model Dev.}, 6:1871--1888, 2013.
+
+\bibitem{Dominicis2013a}
+M.~De Dominicis, N.~Pinardi, G.~Zodiatis, and R.~Lardner.
+\newblock {MEDSLIK-II}, a {L}agrangian marine surface oil spill model for
+  short-term forecasting - part 1: Theory.
+\newblock {\em Geosci. Model Dev.}, 6:1851--1869, 2013.
+
+\bibitem{Elkinton1984}
+J.S. Elkinton, R.T. Carde, and C.J. Mason.
+\newblock Evaluation of time-average dispersion models for estimating pheromone
+  concentration in a deciduous forest.
+\newblock {\em Journal of Chemical Ecology}, 10:1081--1108, 1984.
+
+\bibitem{Fahad2015}
+Muhammad Fahad, Nathaniel Saul, Yi~Guo, and Brian Bingham.
+\newblock Robotic simulation of dynamic plume tracking by unmanned surface
+  vessels.
+\newblock {\em Submitted IEEE International Conference on Robotics and
+  Automation}, 2015.
+
+\bibitem{Farrell2002}
+Jay~A. Farrell, John Mulis, Xuezhu Long, Wei Li, and Ring Carde.
+\newblock Filament-based atmospheric dispersion model to achieve short
+  time-scale structures of odor plumes.
+\newblock {\em Environmental Fluid Mechanics}, 2:142--169, 2002.
+
+\bibitem{Farrell2003}
+Jay~A. Farrell, Shuo Pang, and Wei Li.
+\newblock Plume mapping via hidden {M}arkov methods.
+\newblock {\em IEEE Transactions on Systems, Man and Cybernetics}, 33:850--863,
+  2003.
+
+\bibitem{Grasso2001}
+Frank~W. Grasso.
+\newblock Invertebrate-inspired sensory-motor systems and autonomous,
+  olfactory-guided exploration.
+\newblock {\em Biology Bulletin}, 200:160--168, 2001.
+
+\bibitem{Huang2010}
+Albert~S. Huang, Edwin Olson, and David~C. Moore.
+\newblock {LCM}: {L}ightweight {C}ommunications and {M}arshalling.
+\newblock {\em Proc. Int. Conf. on Intelligent Robots and Systems (IROS)},
+  2010.
+
+\bibitem{Jin2014}
+Xin Jin and Asok Ray.
+\newblock Navigation of autonomous vehicles for oil spill cleaning in dynamic
+  and uncertain environments.
+\newblock {\em International Journal of Control}, Vol 87:787--801, 2014.
+
+\bibitem{Jones1983}
+C.D Jones.
+\newblock On the structure of instantaneous plumes in the atmospher.
+\newblock {\em Journal of Hazardous Materials}, 7:87--112, 1983.
+
+\bibitem{Li2014}
+Shuai Li, Yi~Guo, and Brian Bingham.
+\newblock Multi-robot cooperative control for monitoring and tracking dynamic
+  plumes.
+\newblock In {\em IEEE International Conference on Robotics and Automation},
+  2014.
+
+\bibitem{Li2006}
+Wei Li, Jay~A. Farrel, Shuo Pang, and Richard~M. Arrieta.
+\newblock Moth-inspired chemical plume tracing on an autonomous underwater
+  vehicle.
+\newblock {\em IEEE Transactions on Robotics}, 22:292--307, 2006.
+
+\bibitem{Marjovi2014}
+Ali Marjovi and Lino Marques.
+\newblock Optimal swarm formation for odor plume finding.
+\newblock {\em IEEE Transactions on Cybernetics}, To Appear, 2014.
+
+\bibitem{Nagheeby2010}
+M.~Nagheeby and M.~Kolahdoozan.
+\newblock Numerical modelling of two-phase fluid flow and oil slick transport
+  in estuarine water.
+\newblock {\em Int. J. Environ. Sci. Tech}, 7(4):771--784, 2010.
+
+\bibitem{pang06chemical}
+Shuo Pang and Jay~A. Farrell.
+\newblock Chemical plume source localization.
+\newblock {\em IEEE Transactions on Systems, Man and Cybernetics---{P}art {B}:
+  Cybernetics}, 36(5):1068--1081, 2006.
+
+\bibitem{Sahyoun2010}
+Samir~S. Sahyoun, Seddik~M. Djouadi, and Hairong Qi.
+\newblock Dynamic plume tracking using mobile sensors.
+\newblock In {\em American Control Conference}, 2010.
+
+\bibitem{ASCE1996}
+ASCE task committee on modeling of oil spills of the water
+  resources~engineering division.
+\newblock State-of-the-art review of modelling transport and fate of oil
+  spills.
+\newblock {\em J. Hydraul. Eng.}, 122(11):594--609, 1996.
+
+\bibitem{Webster2001a}
+D.R. Webster, S.~rahman, and L.~P. Dasi.
+\newblock On the usefulness of bilateral comparison to tracking turbulent
+  chemical odor plumes.
+\newblock {\em Limnol. Oceanogr.}, 46(5):1048--1053, 2001.
+
+\bibitem{Webster2001}
+D.R. Webster and M.J. Weissburg.
+\newblock Chemosensory guidance cues in a turbulent chemical odor plume.
+\newblock {\em Limnol. Oceanogr.}, 46(5):1034--1047, 2001.
+
+\bibitem{Zarzhitsky2005}
+D.~Zarzhitsky, D.F Spears, and W.~M. Spears.
+\newblock Swarms for chemical plume tracing.
+\newblock In {\em Swarm Intelligence Symposium}, 2005.
+
+\bibitem{Zhang2007}
+Fumin Zhang, Edward Fiorelli, and Naomi~Ehrich Leonard.
+\newblock Exploring scalar fields using multiple sensor platforms: Tracking
+  level curves.
+\newblock {\em IEEE Conference on Decision and Control}, pages 3579--3584,
+  2007.
+
+\end{thebibliography}
