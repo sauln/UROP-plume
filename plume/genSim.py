@@ -2,7 +2,7 @@ import cPickle
 import sys
 import os
 import time
-
+ 
 from numpy import *
 from pylab import *
 
@@ -18,10 +18,7 @@ import auxiliary
 reload(auxiliary)
 
 ####
-###	We need to save the data off.  the data file shouldn't be too big. 
-### 
-###
-###
+###This module generates the data of a plume and saves it off in file kwarg
 
 
 
